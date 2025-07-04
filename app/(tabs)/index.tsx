@@ -1,9 +1,12 @@
-import { StyleSheet } from 'react-native';
+import { Button, StyleSheet } from 'react-native';
 
 import EditScreenInfo from '@/components/EditScreenInfo';
 import { Text, View } from '@/components/Themed';
+import { useAuthStore } from '@/stores/authStore';
+import { getTokens } from '@/stores/SecureStore';
 
 export default function TabOneScreen() {
+  const { signOut } = useAuthStore();
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Tab One</Text>

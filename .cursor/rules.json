@@ -1,0 +1,48 @@
+{
+    "ignore": [
+        "node_modules/",
+        ".git/",
+        ".expo/",
+        "package-lock.json"
+    ],
+    "testFilePatterns": [
+        "**/__tests__/**/*.[jt]s?(x)"
+    ],
+    "componentFilePatterns": [
+        "src/components/**/*.[jt]sx"
+    ],
+    "screenFilePatterns": [
+        "src/screens/**/*.tsx"
+    ],
+    "navigationFilePatterns": [
+        "src/navigation/**/*.[jt]s?(x)"
+    ],
+    "hookFilePatterns": [
+        "src/hooks/**/*.[jt]s"
+    ],
+    "utilFilePatterns": [
+        "src/utils/**/*.[jt]s"
+    ],
+    "serviceFilePatterns": [
+        "src/services/**/*.[jt]s"
+    ],
+    "storeFilePatterns": [
+        "src/store/**/*.[jt]s"
+    ],
+    "typeFilePatterns": [
+        "src/types/**/*.[jt]s"
+    ],
+    "constantFilePatterns": [
+        "src/constants/**/*.[jt]s"
+    ],
+    "typescript": {
+        "enabled": true,
+        "configFile": "tsconfig.json"
+    },
+    "react": {
+        "enabled": true
+    },
+    "expo": {
+        "enabled": true
+    }
+}
