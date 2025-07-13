@@ -1,28 +1,50 @@
 import { fetchPurchaseRequestList } from '@/server-actions/PurchaseRequestAction';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TextInput, TouchableOpacity } from 'react-native';
 import { useQuery } from '@tanstack/react-query';
 import { PurchaseRequestListResponse } from '@/types/PurchaseRequestTypes';
 import { useState } from 'react';
-import { DataTable, Chip, ActivityIndicator } from 'react-native-paper';
+import { Chip, ActivityIndicator } from 'react-native-paper';
 
 function formatCurrency(num: number) {
-    return 'Rp ' + num.toLocaleString('id-ID');
+    return 'Rp' + num.toLocaleString('id-ID', { minimumFractionDigits: 2 });
 }
 
 function statusColor(status: string) {
     switch (status) {
-        case 'approved': return '#4CAF50';
-        case 'pending': return '#FFC107';
-        case 'declined': return '#F44336';
-        case 'draft': return '#90A4AE';
-        default: return '#BDBDBD';
+        case 'approved': return '#E3F0FF';
+        case 'pending': return '#FFF7D6';
+        case 'declined': return '#FFE3E3';
+        case 'rejected': return '#FFE3E3';
+        case 'draft': return '#F4F6F8';
+        default: return '#F4F6F8';
     }
 }
+
+function statusTextColor(status: string) {
+    switch (status) {
+        case 'approved': return '#1976D2';
+        case 'pending': return '#B08800';
+        case 'declined': return '#D32F2F';
+        case 'rejected': return '#D32F2F';
+        case 'draft': return '#607D8B';
+        default: return '#607D8B';
+    }
+}
+
+const STATUS_TABS = [
+    { key: 'all', label: 'All' },
+    { key: 'pending', label: 'Pending' },
+    { key: 'approved', label: 'Approved' },
+    { key: 'rejected', label: 'Rejected' },
+];
 
 export default function PRListScreen() {
     const [page, setPage] = useState(1);
     const [limit, setLimit] = useState(10);
-    const { data, isLoading } = useQuery<PurchaseRequestListResponse, Error, PurchaseRequestListResponse>({
+    const [search, setSearch] = useState('');
+    const [statusTab, setStatusTab] = useState('all');
+
+    const { data, isLoading, refetch, isFetching } = useQuery<PurchaseRequestListResponse, Error, PurchaseRequestListResponse>({
         queryKey: ['purchase-request-list', page, limit],
         queryFn: () => fetchPurchaseRequestList({ page, limit }),
     });
@@ -31,6 +53,16 @@ export default function PRListScreen() {
     const prData = data?.data || [];
     const pagination = meta?.pagination;
     const metaData = meta?.meta_data;
+
+    // Filter by search and status
+    const filteredData = prData.filter((item) => {
+        const matchesSearch =
+            item.code.toLowerCase().includes(search.toLowerCase()) ||
+            item.created_by?.toLowerCase().includes(search.toLowerCase());
+        const matchesStatus =
+            statusTab === 'all' ? true : item.status === statusTab;
+        return matchesSearch && matchesStatus;
+    });
 
     if (isLoading) {
         return (
@@ -42,60 +74,59 @@ export default function PRListScreen() {
     }
 
     return (
-        <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.container}>
-            <Text style={styles.title}>Purchase Request List</Text>
-            {metaData && (
-                <View style={styles.statusSummary}>
-                    <Chip style={[styles.statusChip, { backgroundColor: statusColor('draft') }]}>Draft: {metaData.draft}</Chip>
-                    <Chip style={[styles.statusChip, { backgroundColor: statusColor('pending') }]}>Pending: {metaData.pending}</Chip>
-                    <Chip style={[styles.statusChip, { backgroundColor: statusColor('approved') }]}>Approved: {metaData.approved}</Chip>
-                    <Chip style={[styles.statusChip, { backgroundColor: statusColor('declined') }]}>Declined: {metaData.declined}</Chip>
-                </View>
-            )}
-            <DataTable>
-                <DataTable.Header>
-                    <DataTable.Title>Code</DataTable.Title>
-                    <DataTable.Title>Client</DataTable.Title>
-                    <DataTable.Title>Destination</DataTable.Title>
-                    <DataTable.Title numeric>Total Items</DataTable.Title>
-                    <DataTable.Title>Status</DataTable.Title>
-                    <DataTable.Title numeric>Total</DataTable.Title>
-                </DataTable.Header>
-                {prData.length === 0 && (
-                    <DataTable.Row>
-                        <DataTable.Cell style={{ justifyContent: 'center', flex: 1 }}>
-                            <Text style={{ color: '#888', textAlign: 'center', width: '100%' }}>No purchase requests found.</Text>
-                        </DataTable.Cell>
-                    </DataTable.Row>
-                )}
-                {prData.map((item) => (
-                    <DataTable.Row key={item.id}>
-                        <DataTable.Cell>{item.code}</DataTable.Cell>
-                        <DataTable.Cell>{item.client_name}</DataTable.Cell>
-                        <DataTable.Cell>{item.destination_name}</DataTable.Cell>
-                        <DataTable.Cell numeric>{item.total_item_count}</DataTable.Cell>
-                        <DataTable.Cell>
-                            <Chip style={{ backgroundColor: statusColor(item.status), alignSelf: 'center' }} textStyle={{ color: '#fff', fontWeight: 'bold' }}>
-                                {item.status.charAt(0).toUpperCase() + item.status.slice(1)}
-                            </Chip>
-                        </DataTable.Cell>
-                        <DataTable.Cell numeric>{formatCurrency(item.grand_total)}</DataTable.Cell>
-                    </DataTable.Row>
+        <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
+            {/* Search Bar */}
+            <View style={styles.searchBarContainer}>
+                <TextInput
+                    style={styles.searchBar}
+                    placeholder="Search PR number or creator"
+                    value={search}
+                    onChangeText={setSearch}
+                    clearButtonMode="while-editing"
+                />
+                {/* Filter icon placeholder */}
+                <View style={styles.filterIcon} />
+            </View>
+            {/* Tabs */}
+            <View style={styles.tabsContainer}>
+                {STATUS_TABS.map(tab => (
+                    <TouchableOpacity
+                        key={tab.key}
+                        style={[styles.tab, statusTab === tab.key && styles.tabActive]}
+                        onPress={() => setStatusTab(tab.key)}
+                    >
+                        <Text style={[styles.tabText, statusTab === tab.key && styles.tabTextActive]}>{tab.label}</Text>
+                    </TouchableOpacity>
                 ))}
-                {pagination && (
-                    <DataTable.Pagination
-                        page={pagination.page - 1}
-                        numberOfPages={pagination.total_pages}
-                        onPageChange={setPage}
-                        label={`Page ${pagination.page} of ${pagination.total_pages}`}
-                        numberOfItemsPerPageList={[10, 20, 30, 40, 50]}
-                        numberOfItemsPerPage={pagination.limit}
-                        onItemsPerPageChange={setLimit}
-                        showFastPaginationControls
-                        selectPageDropdownLabel={'Rows per page'}
-                    />
+            </View>
+            {/* PR Cards */}
+            <View style={{ marginTop: 8 }}>
+                {filteredData.length === 0 && (
+                    <Text style={{ color: '#888', textAlign: 'center', marginTop: 32 }}>No purchase requests found.</Text>
                 )}
-            </DataTable>
+                {filteredData.map((item) => (
+                    <View key={item.id} style={styles.card}>
+                        <View style={styles.cardHeader}>
+                            <Text style={styles.prCode}>{item.code}</Text>
+                            <Text style={styles.prAmount}>{formatCurrency(item.grand_total)}</Text>
+                        </View>
+                        <View style={styles.cardSubHeader}>
+                            <Text style={styles.prDate}>{item.created_at} - {item.created_by}</Text>
+                            <View style={[styles.statusPill, { backgroundColor: statusColor(item.status) }]}>
+                                <Text style={[styles.statusPillText, { color: statusTextColor(item.status) }]}>
+                                    {item.status.charAt(0).toUpperCase() + item.status.slice(1)}
+                                </Text>
+                            </View>
+                        </View>
+                    </View>
+                ))}
+            </View>
+            {/* Pagination - Load More */}
+            {pagination && pagination.page < pagination.total_pages && (
+                <TouchableOpacity style={styles.loadMoreBtn} onPress={() => setPage(page + 1)}>
+                    <Text style={styles.loadMoreText}>{isFetching ? 'Loading...' : 'Load More'}</Text>
+                </TouchableOpacity>
+            )}
         </ScrollView>
     );
 }
@@ -103,26 +134,117 @@ export default function PRListScreen() {
 const styles = StyleSheet.create({
     container: {
         flexGrow: 1,
-        padding: 20,
-        backgroundColor: '#f9f9f9',
+        padding: 16,
+        backgroundColor: '#F6F8FB',
     },
-    title: {
-        fontSize: 28,
-        fontWeight: 'bold',
-        marginBottom: 18,
-        color: '#222',
-        textAlign: 'center',
-    },
-    statusSummary: {
+    searchBarContainer: {
         flexDirection: 'row',
-        justifyContent: 'center',
-        marginBottom: 16,
-        flexWrap: 'wrap',
-        gap: 8,
+        alignItems: 'center',
+        marginBottom: 8,
+        backgroundColor: '#fff',
+        borderRadius: 8,
+        paddingHorizontal: 8,
+        paddingVertical: 4,
+        shadowColor: '#000',
+        shadowOpacity: 0.04,
+        shadowRadius: 2,
+        elevation: 1,
     },
-    statusChip: {
-        marginHorizontal: 4,
-        marginBottom: 4,
+    searchBar: {
+        flex: 1,
+        height: 40,
+        fontSize: 16,
+        backgroundColor: 'transparent',
+        borderWidth: 0,
+        paddingHorizontal: 8,
+    },
+    filterIcon: {
+        width: 32,
+        height: 32,
+        backgroundColor: '#F0F0F0',
+        borderRadius: 8,
+        marginLeft: 4,
+    },
+    tabsContainer: {
+        flexDirection: 'row',
+        borderBottomWidth: 1,
+        borderBottomColor: '#E0E0E0',
+        marginBottom: 8,
+    },
+    tab: {
+        paddingVertical: 8,
+        paddingHorizontal: 16,
+    },
+    tabActive: {
+        borderBottomWidth: 2,
+        borderBottomColor: '#1976D2',
+    },
+    tabText: {
+        color: '#757575',
+        fontSize: 16,
+        fontWeight: '500',
+    },
+    tabTextActive: {
+        color: '#1976D2',
+        fontWeight: 'bold',
+    },
+    card: {
+        backgroundColor: '#fff',
+        borderRadius: 12,
+        padding: 16,
+        marginBottom: 14,
+        shadowColor: '#000',
+        shadowOpacity: 0.04,
+        shadowRadius: 2,
+        elevation: 1,
+    },
+    cardHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
+    prCode: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: '#222',
+    },
+    prAmount: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        color: '#222',
+    },
+    cardSubHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginTop: 6,
+    },
+    prDate: {
+        color: '#6B7280',
+        fontSize: 15,
+    },
+    statusPill: {
+        borderRadius: 16,
+        paddingHorizontal: 12,
+        paddingVertical: 4,
+        alignSelf: 'flex-start',
+    },
+    statusPillText: {
+        fontWeight: 'bold',
+        fontSize: 14,
+    },
+    loadMoreBtn: {
+        marginTop: 12,
+        alignSelf: 'center',
+        backgroundColor: '#1976D2',
+        borderRadius: 8,
+        paddingHorizontal: 24,
+        paddingVertical: 10,
+    },
+    loadMoreText: {
+        color: '#fff',
+        fontWeight: 'bold',
+        fontSize: 16,
     },
     centered: {
         flex: 1,
