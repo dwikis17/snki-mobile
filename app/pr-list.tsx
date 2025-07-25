@@ -1,12 +1,21 @@
 import { fetchPurchaseRequestList } from '@/server-actions/PurchaseRequestAction';
-import { View, Text, StyleSheet, ScrollView, TextInput, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TextInput, TouchableOpacity, RefreshControl } from 'react-native';
 import { useQuery } from '@tanstack/react-query';
-import { PurchaseRequestListResponse } from '@/types/PurchaseRequestTypes';
-import { useState } from 'react';
-import { Chip, ActivityIndicator } from 'react-native-paper';
+import { PurchaseRequestListResponse, PurchaseRequestParams, PurchaseRequestStatus } from '@/types/PurchaseRequestTypes';
+import { useEffect, useState } from 'react';
+import { ActivityIndicator } from 'react-native-paper';
+import useDebounce from '@/hooks/use-debounce';
 
 function formatCurrency(num: number) {
     return 'Rp' + num.toLocaleString('id-ID', { minimumFractionDigits: 2 });
+}
+
+function formatDate(date: string) {
+    return new Date(date).toLocaleDateString('id-ID', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+    });
 }
 
 function statusColor(status: string) {
@@ -43,28 +52,48 @@ export default function PRListScreen() {
     const [limit, setLimit] = useState(10);
     const [search, setSearch] = useState('');
     const [statusTab, setStatusTab] = useState('all');
+    const [refreshing, setRefreshing] = useState(false);
+    const [selectedStatus, setSelectedStatus] = useState<PurchaseRequestStatus | ''>('');
+    const [filters, setFilters] = useState<PurchaseRequestParams>({
+        page,
+        limit,
+        status: selectedStatus as PurchaseRequestStatus,
+        purchase_request_code: search
+    });
+    const debouncedSearch = useDebounce(search, 1000);
+
+    useEffect(() => {
+        setFilters(prev => ({
+            ...prev,
+            page,
+            limit,
+            status: selectedStatus as PurchaseRequestStatus
+        }));
+    }, [selectedStatus, page, limit]);
 
     const { data, isLoading, refetch, isFetching } = useQuery<PurchaseRequestListResponse, Error, PurchaseRequestListResponse>({
-        queryKey: ['purchase-request-list', page, limit],
-        queryFn: () => fetchPurchaseRequestList({ page, limit }),
+        queryKey: ['purchase-request-list', page, limit, filters],
+        queryFn: () => fetchPurchaseRequestList(filters),
     });
 
     const meta = data?.meta;
     const prData = data?.data || [];
     const pagination = meta?.pagination;
-    const metaData = meta?.meta_data;
 
-    // Filter by search and status
-    const filteredData = prData.filter((item) => {
-        const matchesSearch =
-            item.code.toLowerCase().includes(search.toLowerCase()) ||
-            item.created_by?.toLowerCase().includes(search.toLowerCase());
-        const matchesStatus =
-            statusTab === 'all' ? true : item.status === statusTab;
-        return matchesSearch && matchesStatus;
-    });
+    useEffect(() => {
+        setFilters(prev => ({
+            ...prev,
+            purchase_request_code: debouncedSearch
+        }))
+    }, [debouncedSearch])
 
-    if (isLoading) {
+    const onRefresh = async () => {
+        setRefreshing(true);
+        await refetch();
+        setRefreshing(false);
+    };
+
+    if (isLoading && !prData.length) {
         return (
             <View style={styles.centered}>
                 <ActivityIndicator size="large" />
@@ -74,7 +103,19 @@ export default function PRListScreen() {
     }
 
     return (
-        <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
+        <ScrollView
+            style={{ flex: 1 }}
+            contentContainerStyle={styles.container}
+            keyboardShouldPersistTaps="handled"
+            refreshControl={
+                <RefreshControl
+                    refreshing={refreshing}
+                    onRefresh={onRefresh}
+                    colors={["#1976D2"]}
+                    tintColor="#1976D2"
+                />
+            }
+        >
             {/* Search Bar */}
             <View style={styles.searchBarContainer}>
                 <TextInput
@@ -93,7 +134,11 @@ export default function PRListScreen() {
                     <TouchableOpacity
                         key={tab.key}
                         style={[styles.tab, statusTab === tab.key && styles.tabActive]}
-                        onPress={() => setStatusTab(tab.key)}
+                        onPress={() => {
+                            setSelectedStatus(tab.key === 'all' ? '' : tab.key as PurchaseRequestStatus);
+                            setStatusTab(tab.key);
+                            setPage(1); // Reset page when changing tab
+                        }}
                     >
                         <Text style={[styles.tabText, statusTab === tab.key && styles.tabTextActive]}>{tab.label}</Text>
                     </TouchableOpacity>
@@ -101,17 +146,23 @@ export default function PRListScreen() {
             </View>
             {/* PR Cards */}
             <View style={{ marginTop: 8 }}>
-                {filteredData.length === 0 && (
+                {isFetching && !isLoading && (
+                    <View style={{ alignItems: 'center', marginVertical: 12 }}>
+                        <ActivityIndicator size="small" color="#1976D2" />
+                        <Text style={{ color: '#1976D2', marginTop: 4 }}>Refreshing...</Text>
+                    </View>
+                )}
+                {prData.length === 0 && !isFetching && (
                     <Text style={{ color: '#888', textAlign: 'center', marginTop: 32 }}>No purchase requests found.</Text>
                 )}
-                {filteredData.map((item) => (
+                {prData.map((item) => (
                     <View key={item.id} style={styles.card}>
                         <View style={styles.cardHeader}>
                             <Text style={styles.prCode}>{item.code}</Text>
                             <Text style={styles.prAmount}>{formatCurrency(item.grand_total)}</Text>
                         </View>
                         <View style={styles.cardSubHeader}>
-                            <Text style={styles.prDate}>{item.created_at} - {item.created_by}</Text>
+                            <Text style={styles.prDate}>{formatDate(item.created_at)} - {item.created_by}</Text>
                             <View style={[styles.statusPill, { backgroundColor: statusColor(item.status) }]}>
                                 <Text style={[styles.statusPillText, { color: statusTextColor(item.status) }]}>
                                     {item.status.charAt(0).toUpperCase() + item.status.slice(1)}

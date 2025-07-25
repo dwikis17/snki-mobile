@@ -3,7 +3,7 @@ import { Meta } from "./SharedType";
 export interface PurchaseRequestParams {
     page?: number;
     limit?: number;
-    status?: 'draft' | 'pending' | 'approved' | 'declined';
+    status?: PurchaseRequestStatus;
     start_date?: string; // 'YYYY-MM-DD'
     end_date?: string;   // 'YYYY-MM-DD'
     purchase_request_code?: string;
@@ -30,3 +30,6 @@ export interface PurchaseRequestListResponse {
     data: PurchaseRequestList[];
     meta: Meta;
 }
+
+
+export type PurchaseRequestStatus = 'pending' | 'approved' | 'draft' | 'declined' 

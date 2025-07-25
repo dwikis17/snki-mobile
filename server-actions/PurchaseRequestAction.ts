@@ -1,5 +1,4 @@
 import { headers } from "@/contants/headers";
-import { useAuthStore } from "@/stores/authStore";
 import { PurchaseRequestParams } from "@/types/PurchaseRequestTypes";
 import { getTokens } from "@/stores/SecureStore";
 
@@ -11,7 +10,7 @@ export const fetchPurchaseRequestList = async (params: PurchaseRequestParams) =>
     const queryString = new URLSearchParams(params as Record<string, string>).toString();
     const fullUrl = `${apiUrl}?${queryString}`;
     const token = await getTokens();
-    console.log(token, 'token');
+
     try {
         const response = await fetch(fullUrl, {
             method: 'GET',
