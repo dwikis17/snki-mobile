@@ -1,5 +1,5 @@
 import { headers } from "@/contants/headers";
-import { PurchaseRequestParams } from "@/types/PurchaseRequestTypes";
+import { PurchaseRequestParams, PurchaseRequestDetail } from "@/types/PurchaseRequestTypes";
 import { getTokens } from "@/stores/SecureStore";
 
 const baseUrl = process.env.EXPO_PUBLIC_API_URL;
@@ -33,3 +33,30 @@ export const fetchPurchaseRequestList = async (params: PurchaseRequestParams) =>
     }
 
 };
+
+export const fetchPurchaseRequestByCode = async (code: string): Promise<PurchaseRequestDetail> => {
+    const fullUrl = `${apiUrl}/${code}`;
+    const token = await getTokens();
+
+    try {
+        const response = await fetch(fullUrl, {
+            method: 'GET',
+            headers: {
+                ...headers,
+                'Authorization': `Bearer ${token.token}`,
+            },
+        });
+
+        const { data } = await response.json();
+
+        if (!response.ok) {
+            throw new Error('Failed to fetch purchase request detail');
+        }
+
+        return data.data;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+};
+

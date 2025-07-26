@@ -62,8 +62,8 @@ export default function RootLayout() {
 }
 
 function CustomDrawerContent(props: DrawerContentComponentProps) {
-  // Only show allowed drawer items
-  const allowed = ['(tabs)', 'pr-list']; // mock allowed
+  // Only show allowed drawer items - exclude view-pr from drawer menu
+  const allowed = ['(tabs)', '(pr-stack)']; // Only show tabs and pr-stack in drawer
   const filteredProps = {
     ...props,
     state: {
@@ -85,7 +85,13 @@ function RootLayoutNav() {
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <GestureHandlerRootView style={{ flex: 1 }}>
-        <Drawer drawerContent={props => <CustomDrawerContent {...props} />}>
+        <Drawer
+          drawerContent={props => <CustomDrawerContent {...props} />}
+          screenOptions={{
+            headerShown: true,
+            drawerType: 'front',
+          }}
+        >
           <Drawer.Screen
             name="(tabs)"
             options={{
@@ -94,10 +100,10 @@ function RootLayoutNav() {
             }}
           />
           <Drawer.Screen
-            name="pr-list"
+            name="(pr-stack)"
             options={{
-              drawerLabel: 'PR List',
-              title: 'PR List',
+              drawerLabel: 'Purchase Requests',
+              title: 'Purchase Requests',
             }}
           />
         </Drawer>
