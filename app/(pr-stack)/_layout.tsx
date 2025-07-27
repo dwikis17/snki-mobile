@@ -7,7 +7,7 @@ export default function PRStackLayout() {
                 name="index"
                 options={{
                     title: 'Purchase Requests',
-                    headerShown: true,
+                    headerShown: false,
                 }}
             />
             <Stack.Screen

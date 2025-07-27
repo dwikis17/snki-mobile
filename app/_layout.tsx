@@ -63,7 +63,7 @@ export default function RootLayout() {
 
 function CustomDrawerContent(props: DrawerContentComponentProps) {
   // Only show allowed drawer items - exclude view-pr from drawer menu
-  const allowed = ['(tabs)', '(pr-stack)']; // Only show tabs and pr-stack in drawer
+  const allowed = ['(tabs)', '(pr-stack)', 'logout']; // Only show tabs and pr-stack in drawer
   const filteredProps = {
     ...props,
     state: {
@@ -104,6 +104,14 @@ function RootLayoutNav() {
             options={{
               drawerLabel: 'Purchase Requests',
               title: 'Purchase Requests',
+            }}
+          />
+          <Drawer.Screen
+            name="logout"
+            options={{
+              drawerLabel: 'Log Out',
+              title: 'Log Out',
+              headerShown: false,
             }}
           />
         </Drawer>

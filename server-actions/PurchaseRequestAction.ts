@@ -47,7 +47,7 @@ export const fetchPurchaseRequestByCode = async (code: string): Promise<Purchase
             },
         });
 
-        const { data } = await response.json();
+        const data = await response.json();
 
         if (!response.ok) {
             throw new Error('Failed to fetch purchase request detail');

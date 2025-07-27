@@ -1,8 +1,13 @@
-import { Text, View, StyleSheet } from "react-native";
+import { Text, View, StyleSheet, ScrollView, TouchableOpacity, Animated } from "react-native";
 import { useLocalSearchParams } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
 import { fetchPurchaseRequestByCode } from '@/server-actions/PurchaseRequestAction';
 import { ActivityIndicator } from 'react-native-paper';
+import { formatCurrency, formatDate, statusColor, statusTextColor } from "@/utils/CommonUtils";
+import CollapsibleItem from "@/app/components/collapsible-item";
+import PRHeader from "./component/pr-header";
+import PRSummary from "./component/pr-summary";
+import PRPricing from "./component/pr-pricing";
 
 export default function ViewPR() {
     const { code } = useLocalSearchParams<{ code: string }>();
@@ -16,7 +21,7 @@ export default function ViewPR() {
     if (isLoading) {
         return (
             <View style={styles.centered}>
-                <ActivityIndicator size="large" />
+                <ActivityIndicator size="large" color="#1976D2" />
                 <Text style={styles.loadingText}>Loading purchase request...</Text>
             </View>
         );
@@ -40,30 +45,70 @@ export default function ViewPR() {
     }
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.title}>Purchase Request: {purchaseRequest.code}</Text>
-            <Text style={styles.status}>Status: {purchaseRequest.status}</Text>
-            <Text style={styles.createdBy}>Created by: {purchaseRequest.created_by}</Text>
-            <Text style={styles.date}>Created: {new Date(purchaseRequest.created_at).toLocaleDateString()}</Text>
+        <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+            <PRHeader purchaseRequest={purchaseRequest} />
 
-            {/* Add more details here as needed */}
-            <Text style={styles.sectionTitle}>Items ({purchaseRequest.items.length})</Text>
-            {purchaseRequest.items.map((item, index) => (
-                <View key={index} style={styles.itemContainer}>
-                    <Text style={styles.itemName}>{item.item.name}</Text>
-                    <Text style={styles.itemDetails}>
-                        Quantity: {item.quantity} | Price: ${item.item_price}
-                    </Text>
+            <PRSummary purchaseRequest={purchaseRequest} />
+
+            <PRPricing purchaseRequest={purchaseRequest} />
+            {/* Client Information */}
+            <View style={styles.infoSection}>
+                <Text style={styles.sectionTitle}>Client Information</Text>
+                <View style={styles.infoCard}>
+                    <View style={styles.infoRow}>
+                        <Text style={styles.infoLabel}>Client ID</Text>
+                        <Text style={styles.infoValue}>{purchaseRequest.client_id}</Text>
+                    </View>
+                    <View style={styles.infoRow}>
+                        <Text style={styles.infoLabel}>Address</Text>
+                        <Text style={styles.infoValue}>{purchaseRequest.client_address}</Text>
+                    </View>
+                    <View style={styles.infoRow}>
+                        <Text style={styles.infoLabel}>Destination</Text>
+                        <Text style={styles.infoValue}>{purchaseRequest.destination_code}</Text>
+                    </View>
+                    {purchaseRequest.reviewed_by && (
+                        <View style={styles.infoRow}>
+                            <Text style={styles.infoLabel}>Reviewed by</Text>
+                            <Text style={styles.infoValue}>{purchaseRequest.reviewed_by}</Text>
+                        </View>
+                    )}
                 </View>
-            ))}
-        </View>
+            </View>
+
+            {/* Items Section */}
+            <View style={styles.itemsSection}>
+                <Text style={styles.sectionTitle}>Items ({purchaseRequest.items.length})</Text>
+                {purchaseRequest.items.map((item, index) => (
+                    <CollapsibleItem key={index} item={item} index={index} />
+                ))}
+            </View>
+
+            {/* Additional Costs */}
+            {purchaseRequest.reason && purchaseRequest.reason.length > 0 && (
+                <View style={styles.reasonSection}>
+                    <Text style={styles.sectionTitle}>Additional Information</Text>
+                    <View style={styles.reasonCard}>
+                        {purchaseRequest.reason.map((reason, index) => (
+                            <Text key={index} style={styles.reasonText}>{reason}</Text>
+                        ))}
+                    </View>
+                </View>
+            )}
+
+            {/* Footer */}
+            <View style={styles.footer}>
+                <Text style={styles.footerText}>
+                    Last updated: {formatDate(purchaseRequest.updated_at)}
+                </Text>
+            </View>
+        </ScrollView>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        padding: 16,
         backgroundColor: '#F6F8FB',
     },
     centered: {
@@ -72,54 +117,266 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: '#fff',
     },
-    title: {
+    headerSection: {
+        backgroundColor: '#fff',
+        padding: 20,
+        marginBottom: 12,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 3,
+    },
+    headerTop: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 8,
+    },
+    prCode: {
         fontSize: 24,
         fontWeight: 'bold',
-        marginBottom: 16,
         color: '#1F2937',
     },
-    status: {
-        fontSize: 16,
-        marginBottom: 8,
-        color: '#374151',
+    statusPill: {
+        paddingHorizontal: 12,
+        paddingVertical: 6,
+        borderRadius: 20,
+        minWidth: 80,
+        alignItems: 'center',
+    },
+    statusText: {
+        fontSize: 12,
+        fontWeight: '600',
+        textTransform: 'capitalize',
     },
     createdBy: {
         fontSize: 14,
-        marginBottom: 4,
         color: '#6B7280',
+        marginBottom: 4,
     },
     date: {
         fontSize: 14,
-        marginBottom: 16,
         color: '#6B7280',
+    },
+    summarySection: {
+        paddingHorizontal: 16,
+        marginBottom: 12,
+    },
+    summaryRow: {
+        flexDirection: 'row',
+        gap: 12,
+    },
+    summaryCard: {
+        flex: 1,
+        backgroundColor: '#fff',
+        padding: 16,
+        borderRadius: 12,
+        alignItems: 'center',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 3,
+    },
+    itemsSection: {
+        paddingHorizontal: 16,
+        marginBottom: 12,
+    },
+    summaryLabel: {
+        fontSize: 12,
+        color: '#6B7280',
+        marginBottom: 4,
+    },
+    summaryValue: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        color: '#1F2937',
+    },
+    pricingSection: {
+        paddingHorizontal: 16,
+        marginBottom: 12,
     },
     sectionTitle: {
         fontSize: 18,
         fontWeight: '600',
-        marginTop: 16,
-        marginBottom: 8,
         color: '#1F2937',
+        marginBottom: 12,
     },
-    itemContainer: {
+    pricingCard: {
         backgroundColor: '#fff',
-        padding: 12,
-        marginBottom: 8,
-        borderRadius: 8,
+        padding: 16,
+        borderRadius: 12,
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 1 },
+        shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.1,
-        shadowRadius: 2,
-        elevation: 2,
+        shadowRadius: 4,
+        elevation: 3,
     },
-    itemName: {
-        fontSize: 16,
-        fontWeight: '500',
-        marginBottom: 4,
-        color: '#1F2937',
+    pricingRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingVertical: 8,
+        borderBottomWidth: 1,
+        borderBottomColor: '#F3F4F6',
     },
-    itemDetails: {
+    pricingLabel: {
         fontSize: 14,
         color: '#6B7280',
+    },
+    pricingValue: {
+        fontSize: 14,
+        fontWeight: '500',
+        color: '#1F2937',
+    },
+    totalRow: {
+        borderBottomWidth: 0,
+        borderTopWidth: 2,
+        borderTopColor: '#E5E7EB',
+        marginTop: 8,
+        paddingTop: 12,
+    },
+    totalLabel: {
+        fontSize: 16,
+        fontWeight: '600',
+        color: '#1F2937',
+    },
+    totalValue: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: '#059669',
+    },
+    infoSection: {
+        paddingHorizontal: 16,
+        marginBottom: 12,
+    },
+    infoCard: {
+        backgroundColor: '#fff',
+        padding: 16,
+        borderRadius: 12,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 3,
+    },
+    infoRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingVertical: 8,
+        borderBottomWidth: 1,
+        borderBottomColor: '#F3F4F6',
+    },
+    infoLabel: {
+        fontSize: 14,
+        color: '#6B7280',
+        flex: 1,
+    },
+    infoValue: {
+        fontSize: 14,
+        fontWeight: '500',
+        color: '#1F2937',
+        flex: 2,
+        textAlign: 'right',
+    },
+
+    expandButton: {
+        width: 24,
+        height: 24,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    expandIcon: {
+        fontSize: 12,
+        color: '#6B7280',
+        fontWeight: 'bold',
+    },
+    collapsibleContent: {
+        overflow: 'hidden',
+    },
+    itemDetails: {
+        padding: 16,
+    },
+    itemRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingVertical: 6,
+    },
+    itemLabel: {
+        fontSize: 14,
+        color: '#6B7280',
+        flex: 1,
+    },
+    itemValue: {
+        fontSize: 14,
+        fontWeight: '500',
+        color: '#1F2937',
+        flex: 2,
+        textAlign: 'right',
+    },
+    shippingSection: {
+        padding: 16,
+        backgroundColor: '#F9FAFB',
+        borderTopWidth: 1,
+        borderTopColor: '#F3F4F6',
+    },
+    shippingTitle: {
+        fontSize: 14,
+        fontWeight: '600',
+        color: '#374151',
+        marginBottom: 8,
+    },
+    shippingItem: {
+        backgroundColor: '#fff',
+        padding: 12,
+        borderRadius: 8,
+        marginBottom: 8,
+    },
+    shippingRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingVertical: 4,
+    },
+    shippingLabel: {
+        fontSize: 12,
+        color: '#6B7280',
+    },
+    shippingValue: {
+        fontSize: 12,
+        fontWeight: '500',
+        color: '#374151',
+    },
+    reasonSection: {
+        paddingHorizontal: 16,
+        marginBottom: 12,
+    },
+    reasonCard: {
+        backgroundColor: '#fff',
+        padding: 16,
+        borderRadius: 12,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 3,
+    },
+    reasonText: {
+        fontSize: 14,
+        color: '#374151',
+        marginBottom: 8,
+        lineHeight: 20,
+    },
+    footer: {
+        padding: 16,
+        alignItems: 'center',
+    },
+    footerText: {
+        fontSize: 12,
+        color: '#9CA3AF',
     },
     loadingText: {
         marginTop: 12,
