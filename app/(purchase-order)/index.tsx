@@ -1,4 +1,4 @@
-import { fetchQuotationList } from '@/server-actions/QuotationAction';
+import { fetchPurchaseOrderList } from '@/server-actions/PurchaseOrderAction';
 import {
     View, Text, StyleSheet,
     ScrollView,
@@ -6,7 +6,7 @@ import {
     RefreshControl
 } from 'react-native';
 import { useQuery } from '@tanstack/react-query';
-import { QuotationList, QuotationListResponse, QuotationParams, QuotationStatus } from '@/types/QuotationTypes';
+import { PurchaseOrder, PurchaseOrderListResponse, PurchaseOrderParams, PurchaseOrderStatus } from '@/types/PurchaseOrderTypes';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator } from 'react-native-paper';
 import useDebounce from '@/hooks/use-debounce';
@@ -14,28 +14,28 @@ import SearchBar from '../components/search-bar';
 import TabBar from '../components/tab-bar';
 import LoadingRefresh from '../components/loading-refresh';
 import { useRouter } from 'expo-router';
-import QuotationCardComponent from '../components/quotation-card-component';
+import PurchaseOrderCardComponent from '../components/purchase-order-card-component';
 
-const QUOTATION_STATUS_TABS = [
+const PURCHASE_ORDER_STATUS_TABS = [
     { key: 'all', label: 'All' },
+    { key: 'draft', label: 'Draft' },
     { key: 'pending', label: 'Pending' },
-    { key: 'qualified', label: 'Qualified' },
-    { key: 'unqualified', label: 'Unqualified' },
+    { key: 'purchased', label: 'Purchased' },
 ];
 
-export default function QuotationListScreen() {
+export default function PurchaseOrderListScreen() {
     const router = useRouter();
     const [page, setPage] = useState(1);
     const [limit, setLimit] = useState(10);
     const [search, setSearch] = useState('');
     const [statusTab, setStatusTab] = useState('all');
     const [refreshing, setRefreshing] = useState(false);
-    const [selectedStatus, setSelectedStatus] = useState<QuotationStatus | ''>('');
-    const [filters, setFilters] = useState<QuotationParams>({
+    const [selectedStatus, setSelectedStatus] = useState<PurchaseOrderStatus | ''>('');
+    const [filters, setFilters] = useState<PurchaseOrderParams>({
         page,
         limit,
         status: selectedStatus || undefined,
-        quotation_code: search
+        purchase_order_code: search
     });
     const debouncedSearch = useDebounce(search, 1000);
 
@@ -48,19 +48,19 @@ export default function QuotationListScreen() {
         }));
     }, [selectedStatus, page, limit]);
 
-    const { data, isLoading, refetch, isFetching } = useQuery<QuotationListResponse, Error, QuotationListResponse>({
-        queryKey: ['quotation-list', page, limit, filters],
-        queryFn: () => fetchQuotationList(filters),
+    const { data, isLoading, refetch, isFetching } = useQuery<PurchaseOrderListResponse, Error, PurchaseOrderListResponse>({
+        queryKey: ['purchase-order-list', page, limit, filters],
+        queryFn: () => fetchPurchaseOrderList(filters),
     });
 
     const meta = data?.meta;
-    const quotationData = data?.data || [];
+    const purchaseOrderData = data?.data || [];
     const pagination = meta?.pagination;
 
     useEffect(() => {
         setFilters(prev => ({
             ...prev,
-            quotation_code: debouncedSearch
+            purchase_order_code: debouncedSearch
         }))
     }, [debouncedSearch])
 
@@ -71,17 +71,9 @@ export default function QuotationListScreen() {
         setRefreshing(false);
     };
 
-    if (isLoading && !quotationData.length) {
-        return (
-            <View style={styles.centered}>
-                <ActivityIndicator size="large" />
-                <Text style={{ marginTop: 12 }}>Loading Quotation List...</Text>
-            </View>
-        );
-    }
 
-    const handleCardPress = (item: QuotationList) => {
-        router.push(`/(quotation-stack)/view-quotation?code=${item.code}`);
+    const handleCardPress = (item: PurchaseOrder) => {
+        router.push(`/(purchase-order)/view-purchase-order?code=${item.code}`);
     }
 
     return (
@@ -102,22 +94,22 @@ export default function QuotationListScreen() {
             <TabBar
                 statusTab={statusTab}
                 setStatusTab={setStatusTab}
-                setSelectedStatus={(status: string) => setSelectedStatus(status as 'pending' | 'qualified' | 'unqualified')}
+                setSelectedStatus={(status: string) => setSelectedStatus(status as 'draft' | 'pending' | 'purchased')}
                 setPage={setPage}
-                tabList={QUOTATION_STATUS_TABS}
+                tabList={PURCHASE_ORDER_STATUS_TABS}
             />
-            {/* Quotation Cards */}
+            {/* Purchase Order Cards */}
             <View style={{ marginTop: 8 }}>
                 {isFetching && !isLoading && (
                     <LoadingRefresh isLoading={isFetching} />
                 )}
 
-                {quotationData.length === 0 && !isFetching && (
-                    <Text style={{ color: '#888', textAlign: 'center', marginTop: 32 }}>No quotations found.</Text>
+                {purchaseOrderData.length === 0 && !isFetching && (
+                    <Text style={{ color: '#888', textAlign: 'center', marginTop: 32 }}>No purchase orders found.</Text>
                 )}
 
-                {quotationData.map((item) => (
-                    <QuotationCardComponent
+                {purchaseOrderData.map((item) => (
+                    <PurchaseOrderCardComponent
                         key={item.id}
                         item={item}
                         onPress={() => handleCardPress(item)}
@@ -159,4 +151,4 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: '#fff',
     },
-}); 
+});

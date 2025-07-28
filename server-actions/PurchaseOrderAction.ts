@@ -1,11 +1,12 @@
 import { headers } from "@/contants/headers";
-import { QuotationParams, QuotationDetail } from "@/types/QuotationTypes";
+import { PurchaseOrderParams, PurchaseOrderDetail } from "@/types/PurchaseOrderTypes";
 import { getTokens } from "@/stores/SecureStore";
 
 const baseUrl = process.env.EXPO_PUBLIC_API_URL;
-const apiUrl = `${baseUrl}/dashboard/quotation`;
+const apiUrl = `${baseUrl}/dashboard/purchase-order`;
 
-export const fetchQuotationList = async (params: QuotationParams) => {
+
+export const fetchPurchaseOrderList = async (params: PurchaseOrderParams) => {
     if (params.status === undefined) {
         delete params.status;
     }
@@ -24,9 +25,8 @@ export const fetchQuotationList = async (params: QuotationParams) => {
 
         const { data } = await response.json();
 
-
         if (!response.ok) {
-            throw new Error('Failed to fetch quotation list');
+            throw new Error('Failed to fetch purchase order list');
         }
 
         return { data: data.data, meta: data.meta }
@@ -37,10 +37,9 @@ export const fetchQuotationList = async (params: QuotationParams) => {
 
 };
 
-export const fetchQuotationByCode = async (code: string): Promise<QuotationDetail> => {
+export const fetchPurchaseOrderByCode = async (code: string): Promise<PurchaseOrderDetail> => {
     const fullUrl = `${apiUrl}/${code}`;
     const token = await getTokens();
-
     try {
         const response = await fetch(fullUrl, {
             method: 'GET',
@@ -49,14 +48,11 @@ export const fetchQuotationByCode = async (code: string): Promise<QuotationDetai
                 'Authorization': `Bearer ${token.token}`,
             },
         });
-
-        const data = await response.json();
-
+        const { data } = await response.json();
         if (!response.ok) {
-            throw new Error('Failed to fetch quotation detail');
+            throw new Error('Failed to fetch purchase order detail');
         }
-
-        return data.data;
+        return data;
     } catch (error) {
         console.error(error);
         throw error;

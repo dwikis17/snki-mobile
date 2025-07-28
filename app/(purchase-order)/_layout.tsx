@@ -1,19 +1,19 @@
 import { Stack } from 'expo-router';
 
-export default function QuotationStackLayout() {
+export default function PurchaseOrderStackLayout() {
     return (
         <Stack>
             <Stack.Screen
                 name="index"
                 options={{
-                    title: 'Quotation',
+                    title: 'Purchase Orders',
                     headerShown: false,
                 }}
             />
             <Stack.Screen
-                name="view-quotation"
+                name="view-purchase-order"
                 options={{
-                    title: 'View Quotation',
+                    title: 'View Purchase Order',
                     headerShown: true,
                 }}
             />
