@@ -33,7 +33,6 @@ export const useAuthStore = create<AuthState>((set, get) => ({
             await storeTokens(data.sid);
             set({ user: data, isLoggedIn: true });
         } catch (error) {
-            console.log(error, 'error');
             throw error;
         }
     },

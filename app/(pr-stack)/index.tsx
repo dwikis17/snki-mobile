@@ -59,7 +59,6 @@ export default function PRListScreen() {
     }, [debouncedSearch])
 
     const onRefresh = async () => {
-        console.log('onRefresh');
         setRefreshing(true);
         await refetch();
         setRefreshing(false);
