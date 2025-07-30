@@ -65,7 +65,6 @@ export default function PurchaseOrderListScreen() {
     }, [debouncedSearch])
 
     const onRefresh = async () => {
-        console.log('onRefresh');
         setRefreshing(true);
         await refetch();
         setRefreshing(false);

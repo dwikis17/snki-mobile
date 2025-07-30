@@ -8,11 +8,12 @@ import CollapsibleItem from "@/app/components/collapsible-item";
 import PRHeader from "./component/pr-header";
 import PRSummary from "./component/pr-summary";
 import PRPricing from "./component/pr-pricing";
+import { PurchaseRequestDetail } from "@/types/PurchaseRequestTypes";
 
 export default function ViewPR() {
     const { code } = useLocalSearchParams<{ code: string }>();
 
-    const { data: purchaseRequest, isLoading, error } = useQuery({
+    const { data: purchaseRequest, isLoading, error } = useQuery<PurchaseRequestDetail, Error>({
         queryKey: ['purchase-request-detail', code],
         queryFn: () => fetchPurchaseRequestByCode(code!),
         enabled: !!code,
@@ -43,6 +44,21 @@ export default function ViewPR() {
             </View>
         );
     }
+
+
+    const renderApproveButton = () => {
+        if (purchaseRequest.status === 'pending') {
+            return (
+                <View style={styles.centered}>
+                    <TouchableOpacity style={styles.approveButton} onPress={() => {
+                        console.log('approve');
+                    }}>
+                        <Text style={styles.approveButtonText}>Approve</Text>
+                    </TouchableOpacity>
+                </View>
+            );
+        }
+    };
 
     return (
         <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
@@ -84,13 +100,15 @@ export default function ViewPR() {
                 ))}
             </View>
 
-            {/* Additional Costs */}
+            {/* Additional Information */}
             {purchaseRequest.reason && purchaseRequest.reason.length > 0 && (
                 <View style={styles.reasonSection}>
                     <Text style={styles.sectionTitle}>Additional Information</Text>
                     <View style={styles.reasonCard}>
                         {purchaseRequest.reason.map((reason, index) => (
-                            <Text key={index} style={styles.reasonText}>{reason}</Text>
+                            <Text key={index} style={styles.reasonText}>
+                                {reason.reason}
+                            </Text>
                         ))}
                     </View>
                 </View>
@@ -102,6 +120,7 @@ export default function ViewPR() {
                     Last updated: {formatDate(purchaseRequest.updated_at)}
                 </Text>
             </View>
+            {renderApproveButton()}
         </ScrollView>
     );
 }
@@ -393,5 +412,19 @@ const styles = StyleSheet.create({
         color: '#6B7280',
         textAlign: 'center',
         marginTop: 8,
+    },
+    approveButton: {
+        backgroundColor: '#059669',
+        padding: 16,
+        borderRadius: 8,
+        marginBottom: 8,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    approveButtonText: {
+        color: '#fff',
+        fontSize: 14,
+        fontWeight: 'bold',
+        textAlign: 'center',
     },
 });   

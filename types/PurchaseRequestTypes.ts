@@ -83,11 +83,23 @@ export interface PurchaseRequestDetail {
     reviewed_by: string;
     margin_percent: number;
     items: PurchaseRequestItem[];
+    additional_cost: AdditionalCost[];
     grand_total_item_price: number;
     grand_total_shipping_price: number;
     grand_total_additional_cost: number;
     grand_total_margin_price: number;
-    reason: any[];
+    reason: Reason[];
     updated_at: string;
     created_at: string;
+}
+
+export interface Reason {
+    reason: string;
+    reviewed_by: string;
+    created_at: string;
+}
+
+export interface AdditionalCost {
+    category: string;
+    additional_cost: number;
 }

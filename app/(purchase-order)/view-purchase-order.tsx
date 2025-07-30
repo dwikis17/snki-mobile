@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, ActivityIndicator, RefreshControl } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
 import { fetchPurchaseOrderByCode } from '@/server-actions/PurchaseOrderAction';
@@ -8,7 +8,7 @@ import { formatCurrency, formatDate, statusColor, statusTextColor } from '@/util
 export default function ViewPurchaseOrder() {
     const { code } = useLocalSearchParams<{ code: string }>();
 
-    const { data: purchaseOrderResponse, isLoading, error } = useQuery<PurchaseOrderDetail, Error>({
+    const { data: purchaseOrderResponse, isLoading, error, refetch } = useQuery<PurchaseOrderDetail, Error>({
         queryKey: ['purchase-order-detail', code],
         queryFn: () => fetchPurchaseOrderByCode(code!),
         enabled: !!code,
@@ -32,7 +32,7 @@ export default function ViewPurchaseOrder() {
         );
     }
 
-    if (!purchaseOrderResponse?.data) {
+    if (!purchaseOrderResponse) {
         return (
             <View style={styles.centered}>
                 <Text style={styles.errorText}>Purchase order not found</Text>
@@ -43,7 +43,17 @@ export default function ViewPurchaseOrder() {
     const purchaseOrder = purchaseOrderResponse.data;
 
     return (
-        <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+        <ScrollView style={styles.container} showsVerticalScrollIndicator={false}
+            refreshControl={
+                <RefreshControl
+                    refreshing={isLoading}
+                    onRefresh={() => {
+                        refetch();
+                    }}
+                />
+            }
+        >
+
             {/* Header Section */}
             <View style={styles.header}>
                 <View style={styles.headerTop}>

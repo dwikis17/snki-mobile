@@ -48,7 +48,7 @@ export const fetchPurchaseOrderByCode = async (code: string): Promise<PurchaseOr
                 'Authorization': `Bearer ${token.token}`,
             },
         });
-        const { data } = await response.json();
+        const data = await response.json();
         if (!response.ok) {
             throw new Error('Failed to fetch purchase order detail');
         }

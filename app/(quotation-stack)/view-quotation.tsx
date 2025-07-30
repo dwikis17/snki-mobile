@@ -132,6 +132,7 @@ export default function ViewQuotation() {
                 </View>
             </View>
 
+
             {/* Destination Information */}
             <View style={styles.infoSection}>
                 <Text style={styles.sectionTitle}>Destination Information</Text>
