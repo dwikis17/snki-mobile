@@ -1,17 +1,64 @@
 import { Text, View, StyleSheet, ScrollView, TouchableOpacity, Animated } from "react-native";
-import { useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
-import { fetchPurchaseRequestByCode } from '@/server-actions/PurchaseRequestAction';
+import { approvePurchaseRequest, fetchPurchaseRequestByCode } from '@/server-actions/PurchaseRequestAction';
 import { ActivityIndicator } from 'react-native-paper';
-import { formatCurrency, formatDate, statusColor, statusTextColor } from "@/utils/CommonUtils";
+import { formatDate } from "@/utils/CommonUtils";
 import CollapsibleItem from "@/app/components/collapsible-item";
 import PRHeader from "./component/pr-header";
 import PRSummary from "./component/pr-summary";
 import PRPricing from "./component/pr-pricing";
-import { PurchaseRequestDetail } from "@/types/PurchaseRequestTypes";
+import PRActionModal from "./component/pr-action-modal";
+import { ApprovePurchaseRequest, PurchaseRequestDetail } from "@/types/PurchaseRequestTypes";
+import { useAuthStore } from "@/stores/authStore";
+import { useState } from "react";
 
 export default function ViewPR() {
     const { code } = useLocalSearchParams<{ code: string }>();
+
+    const authData = useAuthStore((state) => state.user)
+    const [modalVisible, setModalVisible] = useState(false);
+    const [modalAction, setModalAction] = useState<'approve' | 'decline' | null>(null);
+    const [isActionLoading, setIsActionLoading] = useState(false);
+
+    const isAbleToApprove = authData?.frontend_path.includes("/pr-approval/:prId")
+
+    const handleActionButton = (action: 'approve' | 'decline') => {
+        setModalAction(action);
+        setModalVisible(true);
+    };
+
+    const handleModalConfirm = async (reason?: string, declineType?: 'decline' | 'decline_to_draft') => {
+        setIsActionLoading(true);
+        try {
+            if (modalAction === 'approve') {
+                const payload = {
+                    status: 'approved',
+                }
+                await approvePurchaseRequest(code!, payload as ApprovePurchaseRequest);
+
+            } else if (modalAction === 'decline') {
+                const status = declineType === 'decline_to_draft' ? 'draft' : 'declined';
+                const payload = {
+                    status: status,
+                    reason: reason,
+                }
+                await approvePurchaseRequest(code!, payload as ApprovePurchaseRequest);
+            }
+        } catch (error) {
+            console.error('Error processing action:', error);
+        } finally {
+            setIsActionLoading(false);
+            setModalVisible(false);
+            setModalAction(null);
+            router.push('/');
+        }
+    };
+
+    const handleModalDismiss = () => {
+        setModalVisible(false);
+        setModalAction(null);
+    };
 
     const { data: purchaseRequest, isLoading, error } = useQuery<PurchaseRequestDetail, Error>({
         queryKey: ['purchase-request-detail', code],
@@ -46,13 +93,20 @@ export default function ViewPR() {
     }
 
 
-    const renderApproveButton = () => {
+    const renderApproveOrDeclineButton = () => {
         if (purchaseRequest.status === 'pending') {
             return (
-                <View style={styles.centered}>
-                    <TouchableOpacity style={styles.approveButton} onPress={() => {
-                        console.log('approve');
-                    }}>
+                <View style={[styles.centered, { flexDirection: 'row', gap: 16 }]}>
+                    <TouchableOpacity
+                        style={[styles.declineButton]}
+                        onPress={() => handleActionButton('decline')}
+                    >
+                        <Text style={styles.declineButtonText}>Decline</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        style={[styles.approveButton]}
+                        onPress={() => handleActionButton('approve')}
+                    >
                         <Text style={styles.approveButtonText}>Approve</Text>
                     </TouchableOpacity>
                 </View>
@@ -61,67 +115,77 @@ export default function ViewPR() {
     };
 
     return (
-        <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-            <PRHeader purchaseRequest={purchaseRequest} />
+        <>
+            <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+                <PRHeader purchaseRequest={purchaseRequest} />
 
-            <PRSummary purchaseRequest={purchaseRequest} />
+                <PRSummary purchaseRequest={purchaseRequest} />
 
-            <PRPricing purchaseRequest={purchaseRequest} />
-            {/* Client Information */}
-            <View style={styles.infoSection}>
-                <Text style={styles.sectionTitle}>Client Information</Text>
-                <View style={styles.infoCard}>
-                    <View style={styles.infoRow}>
-                        <Text style={styles.infoLabel}>Client ID</Text>
-                        <Text style={styles.infoValue}>{purchaseRequest.client_id}</Text>
-                    </View>
-                    <View style={styles.infoRow}>
-                        <Text style={styles.infoLabel}>Address</Text>
-                        <Text style={styles.infoValue}>{purchaseRequest.client_address}</Text>
-                    </View>
-                    <View style={styles.infoRow}>
-                        <Text style={styles.infoLabel}>Destination</Text>
-                        <Text style={styles.infoValue}>{purchaseRequest.destination_code}</Text>
-                    </View>
-                    {purchaseRequest.reviewed_by && (
+                <PRPricing purchaseRequest={purchaseRequest} />
+                {/* Client Information */}
+                <View style={styles.infoSection}>
+                    <Text style={styles.sectionTitle}>Client Information</Text>
+                    <View style={styles.infoCard}>
                         <View style={styles.infoRow}>
-                            <Text style={styles.infoLabel}>Reviewed by</Text>
-                            <Text style={styles.infoValue}>{purchaseRequest.reviewed_by}</Text>
+                            <Text style={styles.infoLabel}>Client ID</Text>
+                            <Text style={styles.infoValue}>{purchaseRequest.client_id}</Text>
                         </View>
-                    )}
-                </View>
-            </View>
-
-            {/* Items Section */}
-            <View style={styles.itemsSection}>
-                <Text style={styles.sectionTitle}>Items ({purchaseRequest.items.length})</Text>
-                {purchaseRequest.items.map((item, index) => (
-                    <CollapsibleItem key={index} item={item} index={index} />
-                ))}
-            </View>
-
-            {/* Additional Information */}
-            {purchaseRequest.reason && purchaseRequest.reason.length > 0 && (
-                <View style={styles.reasonSection}>
-                    <Text style={styles.sectionTitle}>Additional Information</Text>
-                    <View style={styles.reasonCard}>
-                        {purchaseRequest.reason.map((reason, index) => (
-                            <Text key={index} style={styles.reasonText}>
-                                {reason.reason}
-                            </Text>
-                        ))}
+                        <View style={styles.infoRow}>
+                            <Text style={styles.infoLabel}>Address</Text>
+                            <Text style={styles.infoValue}>{purchaseRequest.client_address}</Text>
+                        </View>
+                        <View style={styles.infoRow}>
+                            <Text style={styles.infoLabel}>Destination</Text>
+                            <Text style={styles.infoValue}>{purchaseRequest.destination_code}</Text>
+                        </View>
+                        {purchaseRequest.reviewed_by && (
+                            <View style={styles.infoRow}>
+                                <Text style={styles.infoLabel}>Reviewed by</Text>
+                                <Text style={styles.infoValue}>{purchaseRequest.reviewed_by}</Text>
+                            </View>
+                        )}
                     </View>
                 </View>
-            )}
 
-            {/* Footer */}
-            <View style={styles.footer}>
-                <Text style={styles.footerText}>
-                    Last updated: {formatDate(purchaseRequest.updated_at)}
-                </Text>
-            </View>
-            {renderApproveButton()}
-        </ScrollView>
+                {/* Items Section */}
+                <View style={styles.itemsSection}>
+                    <Text style={styles.sectionTitle}>Items ({purchaseRequest.items.length})</Text>
+                    {purchaseRequest.items.map((item, index) => (
+                        <CollapsibleItem key={index} item={item} index={index} />
+                    ))}
+                </View>
+
+                {/* Additional Information */}
+                {purchaseRequest.reason && purchaseRequest.reason.length > 0 && (
+                    <View style={styles.reasonSection}>
+                        <Text style={styles.sectionTitle}>Additional Information</Text>
+                        <View style={styles.reasonCard}>
+                            {purchaseRequest.reason.map((reason, index) => (
+                                <Text key={index} style={styles.reasonText}>
+                                    {reason.reason}
+                                </Text>
+                            ))}
+                        </View>
+                    </View>
+                )}
+
+                {/* Footer */}
+                <View style={styles.footer}>
+                    <Text style={styles.footerText}>
+                        Last updated: {formatDate(purchaseRequest.updated_at)}
+                    </Text>
+                </View>
+                {isAbleToApprove && renderApproveOrDeclineButton()}
+            </ScrollView>
+
+            <PRActionModal
+                visible={modalVisible}
+                onDismiss={handleModalDismiss}
+                action={modalAction}
+                onConfirm={handleModalConfirm}
+                loading={isActionLoading}
+            />
+        </>
     );
 }
 
@@ -422,6 +486,20 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     approveButtonText: {
+        color: '#fff',
+        fontSize: 14,
+        fontWeight: 'bold',
+        textAlign: 'center',
+    },
+    declineButton: {
+        backgroundColor: '#DC2626',
+        padding: 16,
+        borderRadius: 8,
+        marginBottom: 8,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    declineButtonText: {
         color: '#fff',
         fontSize: 14,
         fontWeight: 'bold',

@@ -103,3 +103,8 @@ export interface AdditionalCost {
     category: string;
     additional_cost: number;
 }
+
+export interface ApprovePurchaseRequest {
+    status: 'approved' | 'declined' | 'draft';
+    reason: string;
+}
