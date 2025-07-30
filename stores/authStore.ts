@@ -1,8 +1,5 @@
 // stores/authStore.ts
 import { create } from 'zustand';
-import * as Keychain from 'react-native-keychain';
-import axios from 'axios'; // We'll use this for login/refresh calls within the store
-import { router } from 'expo-router'; // For navigation
 import { storeTokens, getTokens, deleteTokens } from './SecureStore';
 import { UserType } from '@/types/UserType';
 import { headers } from '@/contants/headers';
