@@ -1,17 +1,20 @@
-import { Button, StyleSheet } from 'react-native';
-
-import EditScreenInfo from '@/components/EditScreenInfo';
+import { StyleSheet, Image } from 'react-native';
 import { Text, View } from '@/components/Themed';
 import { useAuthStore } from '@/stores/authStore';
-import { getTokens } from '@/stores/SecureStore';
 
 export default function TabOneScreen() {
-  const { signOut } = useAuthStore();
+  const { user } = useAuthStore();
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Tab One</Text>
+      <Text style={styles.title}>Hello, {user?.profile.name}</Text>
       <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-      <EditScreenInfo path="app/(tabs)/index.tsx" />
+      <View style={styles.centerContent}>
+        <Text style={styles.comingSoon}>Dashboard Coming Soon!</Text>
+        <Text style={styles.subtitle}>
+          We're working hard to bring you a new dashboard experience. Stay tuned!
+        </Text>
+      </View>
     </View>
   );
 }
@@ -19,16 +22,42 @@ export default function TabOneScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    padding: 16,
   },
   title: {
-    fontSize: 20,
+    fontSize: 40,
     fontWeight: 'bold',
+    textAlign: 'center',
+    marginTop: 32,
   },
   separator: {
     marginVertical: 30,
     height: 1,
     width: '80%',
+    alignSelf: 'center',
+  },
+  centerContent: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  comingSoon: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    marginTop: 24,
+    color: '#888',
+    textAlign: 'center',
+  },
+  subtitle: {
+    fontSize: 16,
+    color: '#666',
+    marginTop: 12,
+    textAlign: 'center',
+    paddingHorizontal: 16,
+  },
+  image: {
+    width: 180,
+    height: 180,
+    opacity: 0.8,
   },
 });

@@ -70,14 +70,6 @@ export default function QuotationListScreen() {
         setRefreshing(false);
     };
 
-    if (isLoading && !quotationData.length) {
-        return (
-            <View style={styles.centered}>
-                <ActivityIndicator size="large" />
-                <Text style={{ marginTop: 12 }}>Loading Quotation List...</Text>
-            </View>
-        );
-    }
 
     const handleCardPress = (item: QuotationList) => {
         router.push(`/(quotation-stack)/view-quotation?code=${item.code}`);
@@ -90,7 +82,7 @@ export default function QuotationListScreen() {
             keyboardShouldPersistTaps="handled"
             refreshControl={
                 <RefreshControl
-                    refreshing={refreshing}
+                    refreshing={refreshing || isLoading}
                     onRefresh={onRefresh}
                     colors={["#1976D2"]}
                     tintColor="#1976D2"

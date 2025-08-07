@@ -1,20 +1,72 @@
-import { Text, View, StyleSheet, ScrollView } from "react-native";
-import { useLocalSearchParams } from 'expo-router';
+import { Text, View, StyleSheet, ScrollView, RefreshControl, ActivityIndicator, Button, TouchableOpacity, Alert } from "react-native";
+import { router, useLocalSearchParams } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
-import { ActivityIndicator } from 'react-native-paper';
 import { formatCurrency, formatDate, statusColor, statusTextColor } from "@/utils/CommonUtils";
 import { QuotationDetail } from "@/types/QuotationTypes";
-import { fetchQuotationByCode } from '@/server-actions/QuotationAction';
+import { approveQuotationOrDecline, fetchQuotationByCode } from '@/server-actions/QuotationAction';
 import CollapsibleItem from "../components/collapsible-item";
+import QuotationActionModal from "./component/quotation-action-modal";
+import { useState } from "react";
+import { useAuthStore } from "@/stores/authStore";
 
 export default function ViewQuotation() {
     const { code } = useLocalSearchParams<{ code: string }>();
+    const [refreshing, setRefreshing] = useState(false);
+    const [modalVisible, setModalVisible] = useState(false);
+    const [modalAction, setModalAction] = useState<'approve' | 'decline' | null>(null);
+    const [isActionLoading, setIsActionLoading] = useState(false);
 
-    const { data: quotation, isLoading, error } = useQuery<QuotationDetail | null>({
+    const authData = useAuthStore((state) => state.user)
+
+    const handleActionButton = (action: 'approve' | 'decline') => {
+        setModalAction(action);
+        setModalVisible(true);
+    };
+
+    const handleModalConfirm = async (reason?: string, declineType?: 'unqualified' | 'unqualified_draft') => {
+        try {
+            setIsActionLoading(true);
+            if (modalAction === 'approve') {
+                const payload = {
+                    status: 'qualified',
+                    purchase_order_code: quotation?.code
+                };
+                await approveQuotationOrDecline(code, payload);
+                Alert.alert('Success', 'Quotation approved successfully');
+            } else if (modalAction === 'decline') {
+                const payload = {
+                    status: declineType,
+                    reason: reason,
+                    purchase_order_code: quotation?.code
+                };
+                await approveQuotationOrDecline(code, payload);
+                Alert.alert('Success', 'Quotation declined successfully');
+            }
+        } catch (error) {
+            Alert.alert('Error', 'Failed to process action');
+            console.error('Error processing action:', error);
+        } finally {
+            setIsActionLoading(false);
+            setModalAction(null);
+            setModalVisible(false);
+            router.push('/(quotation-stack)');
+            refetch();
+        }
+    };
+
+
+    const handleModalDismiss = () => {
+        setModalVisible(false);
+        setModalAction(null);
+    };
+
+    const { data: quotation, isLoading, error, refetch } = useQuery<QuotationDetail | null>({
         queryKey: ['quotation-detail', code],
         queryFn: () => fetchQuotationByCode(code!),
         enabled: !!code,
     });
+
+
 
     if (isLoading) {
         return (
@@ -24,7 +76,6 @@ export default function ViewQuotation() {
             </View>
         );
     }
-
     if (error) {
         return (
             <View style={styles.centered}>
@@ -43,126 +94,171 @@ export default function ViewQuotation() {
         );
     }
 
+    const onRefresh = async () => {
+        setRefreshing(true);
+        await refetch();
+        setRefreshing(false);
+    };
+
+
     // TypeScript guard to ensure quotation is not null
     if (!quotation) return null;
 
+    const renderActionButtons = () => {
+        if (quotation.status === 'pending' && authData?.frontend_path.includes("/quotation-approval/:quotationId")) {
+            return (
+                <View style={styles.actionButtonsContainer}>
+                    <TouchableOpacity style={styles.declineButton} onPress={() => handleActionButton('decline')}>
+                        <Text style={styles.declineButtonText}>Decline</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.approveButton} onPress={() => handleActionButton('approve')}>
+                        <Text style={styles.approveButtonText}>Approve</Text>
+                    </TouchableOpacity>
+                </View>
+            );
+        }
+        return null;
+    }
+
     return (
-        <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-            {/* Header Section */}
-            <View style={styles.headerSection}>
-                <View style={styles.headerTop}>
-                    <Text style={styles.quotationCode}>{quotation.code}</Text>
-                    <View style={[styles.statusPill, { backgroundColor: statusColor(quotation.status) }]}>
-                        <Text style={[styles.statusText, { color: statusTextColor(quotation.status) }]}>
-                            {quotation.status.charAt(0).toUpperCase() + quotation.status.slice(1)}
-                        </Text>
+        <>
+            <ScrollView style={styles.container} showsVerticalScrollIndicator={false}
+                refreshControl={
+                    <RefreshControl
+                        refreshing={isLoading}
+                        onRefresh={onRefresh}
+                        colors={["#1976D2"]}
+                        tintColor="#1976D2"
+                    />
+                }
+            >
+                {/* Header Section */}
+                <View style={styles.headerSection}>
+                    <View style={styles.headerTop}>
+                        <Text style={styles.quotationCode}>{quotation.code}</Text>
+                        <View style={[styles.statusPill, { backgroundColor: statusColor(quotation.status) }]}>
+                            <Text style={[styles.statusText, { color: statusTextColor(quotation.status) }]}>
+                                {quotation.status.charAt(0).toUpperCase() + quotation.status.slice(1)}
+                            </Text>
+                        </View>
+                    </View>
+                    <Text style={styles.createdBy}>Created by {quotation.creator.name}</Text>
+                    <Text style={styles.date}>{formatDate(quotation.created_at)}</Text>
+                    {renderActionButtons()}
+                </View>
+
+                {/* Summary Cards */}
+                <View style={styles.summarySection}>
+                    <View style={styles.summaryRow}>
+                        <View style={styles.summaryCard}>
+                            <Text style={styles.summaryLabel}>Total Items</Text>
+                            <Text style={styles.summaryValue}>{quotation.items.length}</Text>
+                        </View>
+                        <View style={styles.summaryCard}>
+                            <Text style={styles.summaryLabel}>Margin %</Text>
+                            <Text style={styles.summaryValue}>{quotation.margin_percent}%</Text>
+                        </View>
                     </View>
                 </View>
-                <Text style={styles.createdBy}>Created by {quotation.creator.name}</Text>
-                <Text style={styles.date}>{formatDate(quotation.created_at)}</Text>
-            </View>
 
-            {/* Summary Cards */}
-            <View style={styles.summarySection}>
-                <View style={styles.summaryRow}>
-                    <View style={styles.summaryCard}>
-                        <Text style={styles.summaryLabel}>Total Items</Text>
-                        <Text style={styles.summaryValue}>{quotation.items.length}</Text>
-                    </View>
-                    <View style={styles.summaryCard}>
-                        <Text style={styles.summaryLabel}>Margin %</Text>
-                        <Text style={styles.summaryValue}>{quotation.margin_percent}%</Text>
+                {/* Pricing Summary */}
+                <View style={styles.pricingSection}>
+                    <Text style={styles.sectionTitle}>Pricing Summary</Text>
+                    <View style={styles.pricingCard}>
+                        <View style={styles.pricingRow}>
+                            <Text style={styles.pricingLabel}>Items Total</Text>
+                            <Text style={styles.pricingValue}>{formatCurrency(quotation.shipping_price)}</Text>
+                        </View>
+                        <View style={styles.pricingRow}>
+                            <Text style={styles.pricingLabel}>Shipping</Text>
+                            <Text style={styles.pricingValue}>{formatCurrency(quotation.shipping_price)}</Text>
+                        </View>
+                        <View style={styles.pricingRow}>
+                            <Text style={styles.pricingLabel}>Additional Costs</Text>
+                            <Text style={styles.pricingValue}>{formatCurrency(quotation.additional_cost)}</Text>
+                        </View>
+                        <View style={styles.pricingRow}>
+                            <Text style={styles.pricingLabel}>Margin</Text>
+                            <Text style={styles.pricingValue}>{formatCurrency(quotation.margin_price)}</Text>
+                        </View>
+                        <View style={styles.pricingRow}>
+                            <Text style={styles.pricingLabel}>Rounding Up</Text>
+                            <Text style={styles.pricingValue}>{formatCurrency(quotation.rounding_up)}</Text>
+                        </View>
+                        <View style={[styles.pricingRow, styles.totalRow]}>
+                            <Text style={styles.totalLabel}>Grand Total</Text>
+                            <Text style={styles.totalValue}>
+                                {formatCurrency(quotation.grand_total_price)}
+                            </Text>
+                        </View>
                     </View>
                 </View>
-            </View>
 
-            {/* Pricing Summary */}
-            <View style={styles.pricingSection}>
-                <Text style={styles.sectionTitle}>Pricing Summary</Text>
-                <View style={styles.pricingCard}>
-                    <View style={styles.pricingRow}>
-                        <Text style={styles.pricingLabel}>Items Total</Text>
-                        <Text style={styles.pricingValue}>{formatCurrency(quotation.shipping_price)}</Text>
-                    </View>
-                    <View style={styles.pricingRow}>
-                        <Text style={styles.pricingLabel}>Shipping</Text>
-                        <Text style={styles.pricingValue}>{formatCurrency(quotation.shipping_price)}</Text>
-                    </View>
-                    <View style={styles.pricingRow}>
-                        <Text style={styles.pricingLabel}>Additional Costs</Text>
-                        <Text style={styles.pricingValue}>{formatCurrency(quotation.additional_cost)}</Text>
-                    </View>
-                    <View style={styles.pricingRow}>
-                        <Text style={styles.pricingLabel}>Margin</Text>
-                        <Text style={styles.pricingValue}>{formatCurrency(quotation.margin_price)}</Text>
-                    </View>
-                    <View style={styles.pricingRow}>
-                        <Text style={styles.pricingLabel}>Rounding Up</Text>
-                        <Text style={styles.pricingValue}>{formatCurrency(quotation.rounding_up)}</Text>
-                    </View>
-                    <View style={[styles.pricingRow, styles.totalRow]}>
-                        <Text style={styles.totalLabel}>Grand Total</Text>
-                        <Text style={styles.totalValue}>
-                            {formatCurrency(quotation.grand_total_price)}
-                        </Text>
+                {/* Client Information */}
+                <View style={styles.infoSection}>
+                    <Text style={styles.sectionTitle}>Client Information</Text>
+                    <View style={styles.infoCard}>
+                        <View style={styles.infoRow}>
+                            <Text style={styles.infoLabel}>Client Name</Text>
+                            <Text style={styles.infoValue}>{quotation.client.name}</Text>
+                        </View>
+                        <View style={styles.infoRow}>
+                            <Text style={styles.infoLabel}>Address</Text>
+                            <Text style={styles.infoValue}>{quotation.client.address}</Text>
+                        </View>
+                        <View style={styles.infoRow}>
+                            <Text style={styles.infoLabel}>Phone</Text>
+                            <Text style={styles.infoValue}>{quotation.client.phone_office}</Text>
+                        </View>
+                        <View style={styles.infoRow}>
+                            <Text style={styles.infoLabel}>PIC</Text>
+                            <Text style={styles.infoValue}>{quotation.client.pic_name}</Text>
+                        </View>
                     </View>
                 </View>
-            </View>
 
-            {/* Client Information */}
-            <View style={styles.infoSection}>
-                <Text style={styles.sectionTitle}>Client Information</Text>
-                <View style={styles.infoCard}>
-                    <View style={styles.infoRow}>
-                        <Text style={styles.infoLabel}>Client Name</Text>
-                        <Text style={styles.infoValue}>{quotation.client.name}</Text>
-                    </View>
-                    <View style={styles.infoRow}>
-                        <Text style={styles.infoLabel}>Address</Text>
-                        <Text style={styles.infoValue}>{quotation.client.address}</Text>
-                    </View>
-                    <View style={styles.infoRow}>
-                        <Text style={styles.infoLabel}>Phone</Text>
-                        <Text style={styles.infoValue}>{quotation.client.phone_office}</Text>
-                    </View>
-                    <View style={styles.infoRow}>
-                        <Text style={styles.infoLabel}>PIC</Text>
-                        <Text style={styles.infoValue}>{quotation.client.pic_name}</Text>
+
+                {/* Destination Information */}
+                <View style={styles.infoSection}>
+                    <Text style={styles.sectionTitle}>Destination Information</Text>
+                    <View style={styles.infoCard}>
+                        <View style={styles.infoRow}>
+                            <Text style={styles.infoLabel}>Destination</Text>
+                            <Text style={styles.infoValue}>{quotation.destination.name}</Text>
+                        </View>
+                        <View style={styles.infoRow}>
+                            <Text style={styles.infoLabel}>Code</Text>
+                            <Text style={styles.infoValue}>{quotation.destination.code}</Text>
+                        </View>
                     </View>
                 </View>
-            </View>
 
-
-            {/* Destination Information */}
-            <View style={styles.infoSection}>
-                <Text style={styles.sectionTitle}>Destination Information</Text>
-                <View style={styles.infoCard}>
-                    <View style={styles.infoRow}>
-                        <Text style={styles.infoLabel}>Destination</Text>
-                        <Text style={styles.infoValue}>{quotation.destination.name}</Text>
-                    </View>
-                    <View style={styles.infoRow}>
-                        <Text style={styles.infoLabel}>Code</Text>
-                        <Text style={styles.infoValue}>{quotation.destination.code}</Text>
-                    </View>
+                {/* Items Section */}
+                <View style={styles.itemsSection}>
+                    <Text style={styles.sectionTitle}>Items ({quotation.items.length})</Text>
+                    {quotation.items.map((item, index) => (
+                        <CollapsibleItem key={index} item={item} index={index} />
+                    ))}
                 </View>
-            </View>
 
-            {/* Items Section */}
-            <View style={styles.itemsSection}>
-                <Text style={styles.sectionTitle}>Items ({quotation.items.length})</Text>
-                {quotation.items.map((item, index) => (
-                    <CollapsibleItem key={index} item={item} index={index} />
-                ))}
-            </View>
 
-            {/* Footer */}
-            <View style={styles.footer}>
-                <Text style={styles.footerText}>
-                    Last updated: {formatDate(quotation.updated_at)}
-                </Text>
-            </View>
-        </ScrollView>
+
+                {/* Footer */}
+                <View style={styles.footer}>
+                    <Text style={styles.footerText}>
+                        Last updated: {formatDate(quotation.updated_at)}
+                    </Text>
+                </View>
+            </ScrollView>
+
+            <QuotationActionModal
+                visible={modalVisible}
+                onDismiss={handleModalDismiss}
+                action={modalAction}
+                onConfirm={handleModalConfirm}
+                loading={isActionLoading}
+            />
+        </>
     );
 }
 
@@ -371,5 +467,36 @@ const styles = StyleSheet.create({
         color: '#6B7280',
         textAlign: 'center',
         marginTop: 8,
+    },
+    approveButton: {
+        backgroundColor: '#059669',
+        padding: 12,
+        borderRadius: 10,
+        flex: 1,
+        alignItems: 'center',
+    },
+    approveButtonText: {
+        color: '#fff',
+        fontSize: 16,
+        fontWeight: 'bold',
+        textAlign: 'center',
+    },
+    actionButtonsContainer: {
+        flexDirection: 'row',
+        gap: 12,
+        marginTop: 10,
+    },
+    declineButton: {
+        backgroundColor: '#dc3545',
+        padding: 12,
+        borderRadius: 10,
+        flex: 1,
+        alignItems: 'center',
+    },
+    declineButtonText: {
+        color: '#fff',
+        fontSize: 16,
+        fontWeight: 'bold',
+        textAlign: 'center',
     },
 }); 

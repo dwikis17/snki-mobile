@@ -14,9 +14,10 @@ export function statusColor(status: string) {
     switch (status) {
         case 'approved': return '#E3F0FF';
         case 'pending': return '#FFF7D6';
-        case 'declined': return '#FFE3E3';
-        case 'rejected': return '#FFE3E3';
+        case 'declined': return '#FFB3B3'; // light red
+        case 'rejected': return '#FFB3B3'; // light red
         case 'draft': return '#F4F6F8';
+        case 'qualified': return '#D1F5E0'; // green
         default: return '#F4F6F8';
     }
 }

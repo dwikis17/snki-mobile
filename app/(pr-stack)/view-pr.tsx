@@ -96,15 +96,15 @@ export default function ViewPR() {
     const renderApproveOrDeclineButton = () => {
         if (purchaseRequest.status === 'pending') {
             return (
-                <View style={[styles.centered, { flexDirection: 'row', gap: 16 }]}>
+                <View style={styles.buttonContainer}>
                     <TouchableOpacity
-                        style={[styles.declineButton]}
+                        style={styles.declineButton}
                         onPress={() => handleActionButton('decline')}
                     >
                         <Text style={styles.declineButtonText}>Decline</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
-                        style={[styles.approveButton]}
+                        style={styles.approveButton}
                         onPress={() => handleActionButton('approve')}
                     >
                         <Text style={styles.approveButtonText}>Approve</Text>
@@ -118,6 +118,7 @@ export default function ViewPR() {
         <>
             <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
                 <PRHeader purchaseRequest={purchaseRequest} />
+                {isAbleToApprove && renderApproveOrDeclineButton()}
 
                 <PRSummary purchaseRequest={purchaseRequest} />
 
@@ -175,8 +176,10 @@ export default function ViewPR() {
                         Last updated: {formatDate(purchaseRequest.updated_at)}
                     </Text>
                 </View>
-                {isAbleToApprove && renderApproveOrDeclineButton()}
+
+
             </ScrollView>
+
 
             <PRActionModal
                 visible={modalVisible}
@@ -193,12 +196,29 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#F6F8FB',
+        height: '100%',
     },
     centered: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: '#fff',
+    },
+    actionButtonContainer: {
+        padding: 16,
+        backgroundColor: '#fff',
+        borderBottomWidth: 1,
+        borderBottomColor: '#F3F4F6',
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    buttonContainer: {
+        flexDirection: 'row',
+        gap: 12,
+        marginTop: 16,
+        paddingHorizontal: 16,
+        justifyContent: 'space-between',
     },
     headerSection: {
         backgroundColor: '#fff',
@@ -481,9 +501,9 @@ const styles = StyleSheet.create({
         backgroundColor: '#059669',
         padding: 16,
         borderRadius: 8,
-        marginBottom: 8,
         alignItems: 'center',
         justifyContent: 'center',
+        flex: 1,
     },
     approveButtonText: {
         color: '#fff',
@@ -495,9 +515,9 @@ const styles = StyleSheet.create({
         backgroundColor: '#DC2626',
         padding: 16,
         borderRadius: 8,
-        marginBottom: 8,
         alignItems: 'center',
         justifyContent: 'center',
+        flex: 1,
     },
     declineButtonText: {
         color: '#fff',

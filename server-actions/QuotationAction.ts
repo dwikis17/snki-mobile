@@ -62,3 +62,29 @@ export const fetchQuotationByCode = async (code: string): Promise<QuotationDetai
         throw error;
     }
 };
+
+
+export const approveQuotationOrDecline = async (code: string, payload: any) => {
+    const fullUrl = `${apiUrl}/approval/${code}`;
+    const token = await getTokens();
+
+    try {
+        const response = await fetch(fullUrl, {
+            method: 'PUT',
+            headers: {
+                ...headers,
+                'Authorization': `Bearer ${token.token}`,
+            },
+            body: JSON.stringify(payload),
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to approve quotation');
+        }
+
+        return response.json();
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+}

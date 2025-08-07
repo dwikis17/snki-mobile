@@ -8,7 +8,6 @@ import {
 import { useQuery } from '@tanstack/react-query';
 import { PurchaseRequestList, PurchaseRequestListResponse, PurchaseRequestParams, PurchaseRequestStatus } from '@/types/PurchaseRequestTypes';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator } from 'react-native-paper';
 import useDebounce from '@/hooks/use-debounce';
 import SearchBar from '../components/search-bar';
 import { STATUS_TABS } from '@/contants/purchase-request';
@@ -64,14 +63,7 @@ export default function PRListScreen() {
         setRefreshing(false);
     };
 
-    if (isLoading && !prData.length) {
-        return (
-            <View style={styles.centered}>
-                <ActivityIndicator size="large" />
-                <Text style={{ marginTop: 12 }}>Loading PR List...</Text>
-            </View>
-        );
-    }
+
 
     const handleCardPress = (item: PurchaseRequestList) => {
         router.push(`/(pr-stack)/view-pr?code=${item.code}`);
@@ -84,7 +76,7 @@ export default function PRListScreen() {
             keyboardShouldPersistTaps="handled"
             refreshControl={
                 <RefreshControl
-                    refreshing={refreshing}
+                    refreshing={refreshing || isLoading}
                     onRefresh={onRefresh}
                     colors={["#1976D2"]}
                     tintColor="#1976D2"
