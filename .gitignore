@@ -79,17 +79,16 @@ android/app/src/main/res/values-v*/fractions.xml
 # iOS
 ios/build/
 ios/Pods/
-ios/Podfile.lock
+# Allow Podfile.lock for reproducible builds
+# ios/Podfile.lock
 ios/.DS_Store
 ios/.idea/
 ios/DerivedData/
-ios/*.xcworkspace
-ios/*.xcodeproj/project.xcworkspace/
-ios/*.xcodeproj/xcuserdata/
-ios/*.xcodeproj/xcshareddata/
+# Allow workspace files but ignore user-specific data
+ios/*.xcworkspace/xcuserdata/
+ios/*.xcworkspace/xcshareddata/
 ios/*.xcodeproj/project.xcworkspace/xcuserdata/
 ios/*.xcodeproj/xcuserdata/
-ios/*.xcworkspace/xcuserdata/
 ios/*.xcuserstate
 ios/*.xcuserdata
 ios/*.xcscmblueprint
