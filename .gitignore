@@ -1,4 +1,4 @@
-# Node modules
+# Dependencies
 node_modules/
 npm-debug.log*
 yarn-debug.log*
@@ -9,16 +9,21 @@ package-lock.json
 # OS files
 .DS_Store
 Thumbs.db
+*.DS_Store
 
 # Environment files
 .env
 .env.*
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
 .xcode.env
 *.jks
 
 # Expo files
 .expo/
-.expo-shared/assets.json
+.expo-shared/
 web-build/
 dist/
 build/
@@ -28,14 +33,12 @@ build/
 *.log
 *.lock
 *.tmp
+*.tsbuildinfo
 
 # Metro
 metro-cache/
 .cache/
 logs/
-
-# macOS
-*.DS_Store
 
 # Android
 android/.gradle/
@@ -44,6 +47,34 @@ android/build/
 android/.idea/
 android/local.properties
 android/gradle.properties
+android/app/release/
+android/app/debug/
+android/app/src/main/assets/
+android/app/src/main/jniLibs/
+android/app/.cxx/
+android/app/.externalNativeBuild/
+android/app/src/main/java/com/dwikis17/snkimobile/BuildConfig.java
+android/app/src/main/java/com/dwikis17/snkimobile/R.java
+android/app/src/main/java/com/dwikis17/snkimobile/R$*.java
+android/app/src/main/res/values-v*/strings.xml
+android/app/src/main/res/values-v*/colors.xml
+android/app/src/main/res/values-v*/styles.xml
+android/app/src/main/res/values-v*/themes.xml
+android/app/src/main/res/values-v*/dimens.xml
+android/app/src/main/res/values-v*/integers.xml
+android/app/src/main/res/values-v*/bools.xml
+android/app/src/main/res/values-v*/arrays.xml
+android/app/src/main/res/values-v*/plurals.xml
+android/app/src/main/res/values-v*/attrs.xml
+android/app/src/main/res/values-v*/drawables.xml
+android/app/src/main/res/values-v*/ids.xml
+android/app/src/main/res/values-v*/layouts.xml
+android/app/src/main/res/values-v*/menus.xml
+android/app/src/main/res/values-v*/xmls.xml
+android/app/src/main/res/values-v*/raws.xml
+android/app/src/main/res/values-v*/animations.xml
+android/app/src/main/res/values-v*/interpolators.xml
+android/app/src/main/res/values-v*/fractions.xml
 
 # iOS
 ios/build/
@@ -53,6 +84,26 @@ ios/.DS_Store
 ios/.idea/
 ios/DerivedData/
 ios/*.xcworkspace
+ios/*.xcodeproj/project.xcworkspace/
+ios/*.xcodeproj/xcuserdata/
+ios/*.xcodeproj/xcshareddata/
+ios/*.xcodeproj/project.xcworkspace/xcuserdata/
+ios/*.xcodeproj/xcuserdata/
+ios/*.xcworkspace/xcuserdata/
+ios/*.xcuserstate
+ios/*.xcuserdata
+ios/*.xcscmblueprint
+ios/*.xccheckout
+ios/*.moved-aside
+ios/*.hmap
+ios/*.ipa
+ios/*.dSYM.zip
+ios/*.dSYM
+ios/*.app.dSYM
+ios/*.app
+ios/*.framework
+ios/*.bundle
+ios/*.xcarchive
 
 # Xcode
 *.xcuserstate
@@ -82,3 +133,33 @@ fastlane/test_output
 # Misc
 *.keystore
 debug.keystore
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.orig.*
+*.orig
+
+# Generated files
+*.generated.*
+*.generated
+*.gen.*
+*.gen
+
+# Test coverage
+coverage/
+*.lcov
+*.coverage
+*.coverage.*
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# Backup files
+*.bak
+*.backup
+*.old
