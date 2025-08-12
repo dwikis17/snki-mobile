@@ -79,8 +79,11 @@ android/app/src/main/res/values-v*/fractions.xml
 # iOS
 ios/build/
 # Allow essential pod files for Xcode Cloud builds
-ios/Pods/
 !ios/Podfile.lock
+!ios/Pods/Manifest.lock
+!ios/Pods/Target Support Files/
+!ios/Pods/Target Support Files/Pods-snkimobile/
+ios/Pods/
 ios/.DS_Store
 ios/.idea/
 ios/DerivedData/

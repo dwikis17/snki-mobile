@@ -1,0 +1,6 @@
+module Pods_snkimobile {
+  umbrella header "Pods-snkimobile-umbrella.h"
+
+  export *
+  module * { export * }
+}
