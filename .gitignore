@@ -78,9 +78,9 @@ android/app/src/main/res/values-v*/fractions.xml
 
 # iOS
 ios/build/
+# Allow essential pod files for Xcode Cloud builds
 ios/Pods/
-# Allow Podfile.lock for reproducible builds
-# ios/Podfile.lock
+!ios/Podfile.lock
 ios/.DS_Store
 ios/.idea/
 ios/DerivedData/
