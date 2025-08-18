@@ -4,6 +4,7 @@ import { useAuthStore } from '@/stores/authStore';
 import { z } from 'zod';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Ionicons } from '@expo/vector-icons';
 
 export const loginSchema = z.object({
     email: z.string().email({ message: 'Invalid email address' }),
@@ -20,7 +21,7 @@ export default function Login() {
     });
     const [isLoading, setIsLoading] = useState(false);
     const signIn = useAuthStore((state) => state.signIn);
-
+    const [showPassword, setShowPassword] = useState(false);
     const onSubmit = async (data: z.infer<typeof loginSchema>) => {
         setIsLoading(true);
         try {
@@ -48,6 +49,7 @@ export default function Login() {
                         keyboardType="email-address"
                         autoCapitalize="none"
                         autoComplete="email"
+                        placeholderTextColor="#999"
                     />
                 )}
             />
@@ -56,18 +58,26 @@ export default function Login() {
                 control={control}
                 name="password"
                 render={({ field: { onChange, onBlur, value } }) => (
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Password"
-                        value={value}
-                        onChangeText={onChange}
-                        onBlur={onBlur}
-                        secureTextEntry
-                        autoCapitalize="none"
-                        autoComplete="password"
-                    />
+                    <View style={styles.passwordContainer}>
+                        <TextInput
+                            style={styles.inputPassword}
+                            placeholder="Password"
+                            value={value}
+                            onChangeText={onChange}
+                            onBlur={onBlur}
+                            secureTextEntry={!showPassword}
+                            autoCapitalize="none"
+                            autoComplete="password"
+                            placeholderTextColor="#999"
+                        />
+                        <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeIcon}>
+                            <Ionicons name={showPassword ? 'eye-off' : 'eye'} size={24} color="#999" />
+                        </TouchableOpacity>
+                    </View>
+
                 )}
             />
+
             {errors.password && <Text style={styles.error}>{errors.password.message}</Text>}
             <TouchableOpacity
                 style={styles.button}
@@ -105,6 +115,26 @@ const styles = StyleSheet.create({
         paddingHorizontal: 15,
         marginBottom: 15,
         fontSize: 16,
+    },
+    passwordContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    inputPassword: {
+        height: 50,
+        borderWidth: 1,
+        borderColor: '#ddd',
+        borderRadius: 8,
+        paddingHorizontal: 15,
+        marginBottom: 15,
+        fontSize: 16,
+        flex: 1,
+    },
+    eyeIcon: {
+        position: 'absolute',
+        right: 15,
+        zIndex: 1,
+        top: 15,
     },
     button: {
         backgroundColor: '#007AFF',
