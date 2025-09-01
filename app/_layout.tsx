@@ -37,6 +37,10 @@ export default function RootLayout() {
   const { isLoading, isLoggedIn } = useAuthStore();
 
   useEffect(() => {
+    useAuthStore.getState().loadAuthState();
+  }, []);
+
+  useEffect(() => {
     if (error) throw error;
   }, [error]);
 
@@ -80,10 +84,11 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
 }
 
 function RootLayoutNav() {
-  const colorScheme = useColorScheme();
+  // Force light theme for React Navigation
+  const colorScheme = 'light';
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+    <ThemeProvider value={DefaultTheme}>
       <GestureHandlerRootView style={{ flex: 1 }}>
         <Drawer
           drawerContent={props => <CustomDrawerContent {...props} />}

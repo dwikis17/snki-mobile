@@ -12,7 +12,6 @@ import { ActivityIndicator } from 'react-native-paper';
 import useDebounce from '@/hooks/use-debounce';
 import SearchBar from '../components/search-bar';
 import TabBar from '../components/tab-bar';
-import LoadingRefresh from '../components/loading-refresh';
 import { useRouter } from 'expo-router';
 import PurchaseOrderCardComponent from '../components/purchase-order-card-component';
 
@@ -99,9 +98,6 @@ export default function PurchaseOrderListScreen() {
             />
             {/* Purchase Order Cards */}
             <View style={{ marginTop: 8 }}>
-                {isFetching && !isLoading && (
-                    <LoadingRefresh isLoading={isFetching} />
-                )}
 
                 {purchaseOrderData.length === 0 && !isFetching && (
                     <Text style={{ color: '#888', textAlign: 'center', marginTop: 32 }}>No purchase orders found.</Text>
@@ -113,6 +109,7 @@ export default function PurchaseOrderListScreen() {
                         item={item}
                         onPress={() => handleCardPress(item)}
                     />
+
                 ))}
             </View>
             {/* Pagination - Load More */}

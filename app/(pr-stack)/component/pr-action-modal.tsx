@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, TouchableWithoutFeedback, Dimensions, Modal } from 'react-native';
+import { View, StyleSheet, TouchableWithoutFeedback, Dimensions, Modal, Keyboard } from 'react-native';
 import { Text, Button, TextInput as PaperTextInput, Provider, RadioButton } from 'react-native-paper';
 import Colors from '@/constants/Colors';
 
@@ -25,12 +25,14 @@ export default function PRActionModal({
         if (action === 'decline' && !reason.trim()) {
             return; // Don't proceed if decline reason is empty
         }
+        Keyboard.dismiss(); // Dismiss keyboard when confirming
         onConfirm(action === 'decline' ? reason : undefined, action === 'decline' ? declineType : undefined);
         setReason(''); // Reset reason when modal is closed
         setDeclineType('decline'); // Reset decline type when modal is closed
     };
 
     const handleDismiss = () => {
+        Keyboard.dismiss(); // Dismiss keyboard when modal is dismissed
         setReason(''); // Reset reason when modal is dismissed
         setDeclineType('decline'); // Reset decline type when modal is dismissed
         onDismiss();
@@ -49,9 +51,12 @@ export default function PRActionModal({
                 animationType="fade"
                 onRequestClose={handleDismiss}
             >
-                <TouchableWithoutFeedback onPress={handleDismiss}>
+                <TouchableWithoutFeedback onPress={() => {
+                    Keyboard.dismiss();
+                    handleDismiss();
+                }}>
                     <View style={styles.overlay}>
-                        <TouchableWithoutFeedback onPress={() => { }}>
+                        <TouchableWithoutFeedback onPress={() => { Keyboard.dismiss() }}>
                             <View style={styles.modalContainer}>
                                 <View style={styles.content}>
                                     <Text style={styles.title}>
@@ -98,7 +103,10 @@ export default function PRActionModal({
                                     <View style={styles.buttonContainer}>
                                         <Button
                                             mode="outlined"
-                                            onPress={handleDismiss}
+                                            onPress={() => {
+                                                Keyboard.dismiss();
+                                                handleDismiss();
+                                            }}
                                             style={[styles.button, styles.cancelButton]}
                                             disabled={loading}
                                         >
@@ -114,6 +122,7 @@ export default function PRActionModal({
                                             ]}
                                             disabled={loading || (isDecline && !reason.trim())}
                                             loading={loading}
+                                            textColor='white'
                                         >
                                             {isApprove ? 'Approve' : 'Decline'}
                                         </Button>
@@ -193,13 +202,20 @@ const styles = StyleSheet.create({
         paddingVertical: 4,
     },
     cancelButton: {
-        borderColor: '#ccc',
+        borderWidth: 1,
+        borderColor: '#E5E7EB',
+        color: '#fff',
     },
     approveButton: {
         backgroundColor: Colors.light.tint,
+        borderWidth: 1,
+        borderColor: '#E5E7EB',
     },
     declineButton: {
         backgroundColor: '#dc3545',
+        borderWidth: 1,
+        borderColor: '#E5E7EB',
+        color: '#fff',
     },
     declineTypeContainer: {
         marginBottom: 20,
