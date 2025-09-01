@@ -23,6 +23,7 @@ export default function ViewPR() {
 
     const isAbleToApprove = authData?.frontend_path.includes("/pr-approval/:prId")
 
+
     const handleActionButton = (action: 'approve' | 'decline') => {
         setModalAction(action);
         setModalVisible(true);
@@ -65,6 +66,8 @@ export default function ViewPR() {
         queryFn: () => fetchPurchaseRequestByCode(code!),
         enabled: !!code,
     });
+
+    const isRenderViewPr = purchaseRequest?.status === 'approved';
 
     if (isLoading) {
         return (
@@ -114,11 +117,34 @@ export default function ViewPR() {
         }
     };
 
+    const renderViewPr = () => {
+        if (isRenderViewPr) {
+            return (
+                <View style={styles.viewQuotationContainer}>
+                    <TouchableOpacity
+                        style={styles.viewQuotationButton}
+                        onPress={() => {
+                            const quotationCode = purchaseRequest.code;
+                            console.log(quotationCode, 'quotationCode');
+                            // Navigate to quotation view or handle the action
+                            console.log('View Quotation pressed');
+                            // router.push(`/quotation/${purchaseRequest.id}`); // Uncomment when you have the route
+                        }}
+                        activeOpacity={0.7}
+                    >
+                        <Text style={styles.viewQuotationButtonText}>View PR</Text>
+                    </TouchableOpacity>
+                </View>
+            );
+        }
+    };
+
     return (
         <>
             <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
                 <PRHeader purchaseRequest={purchaseRequest} />
                 {isAbleToApprove && renderApproveOrDeclineButton()}
+                {renderViewPr()}
 
                 <PRSummary purchaseRequest={purchaseRequest} />
 
@@ -527,4 +553,41 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         textAlign: 'center',
     },
+    viewQuotationContainer: {
+        backgroundColor: '#fff',
+        alignItems: 'flex-start',
+        flexDirection: 'row',
+        justifyContent: 'flex-start',
+        padding: 16,
+    },
+    viewQuotationText: {
+        fontSize: 14,
+        fontWeight: '500',
+        color: '#1F2937',
+        textAlign: 'center',
+
+    },
+    viewQuotationButton: {
+        backgroundColor: '#1976D2',
+        padding: 16,
+
+
+        borderRadius: 12,
+        alignItems: 'center',
+        justifyContent: 'center',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 3,
+        alignSelf: 'center',
+        minWidth: 200,
+    },
+    viewQuotationButtonText: {
+        fontSize: 16,
+        fontWeight: '600',
+        color: '#fff',
+        textAlign: 'center',
+    },
+
 });   

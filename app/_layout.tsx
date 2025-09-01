@@ -13,6 +13,7 @@ import { useAuthStore } from '@/stores/authStore';
 import { Drawer } from 'expo-router/drawer';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { setupNotificationListeners } from '@/utils/notificationSetup';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -38,6 +39,12 @@ export default function RootLayout() {
 
   useEffect(() => {
     useAuthStore.getState().loadAuthState();
+  }, []);
+
+  useEffect(() => {
+    // Set up notification listeners
+    const cleanup = setupNotificationListeners();
+    return cleanup;
   }, []);
 
   useEffect(() => {
