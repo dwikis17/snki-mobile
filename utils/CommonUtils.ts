@@ -1,3 +1,7 @@
+import { useAuthStore } from "@/stores/authStore";
+import { Alert } from "react-native";
+
+
 export function formatCurrency(num: number) {
     return 'Rp' + num.toLocaleString('id-ID', { minimumFractionDigits: 2 });
 }
@@ -30,5 +34,19 @@ export function statusTextColor(status: string) {
         case 'rejected': return '#D32F2F';
         case 'draft': return '#607D8B';
         default: return '#607D8B';
+    }
+}
+
+export interface ErrorInterface {
+    message: string;
+    status: number;
+    data: any;
+}
+
+export const handleError = (error: ErrorInterface) => {
+    if (error.status === 4000) {
+        useAuthStore.getState().signOut();
+    } else {
+        Alert.alert('Error', error.message);
     }
 }

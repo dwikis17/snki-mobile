@@ -1,8 +1,12 @@
-import { PurchaseRequestDetail } from "@/types/PurchaseRequestTypes";
+import { PurchaseRequestDetail, PurchaseRequestItem } from "@/types/PurchaseRequestTypes";
 import { View, Text, StyleSheet } from "react-native";
 
 interface PRSummaryProps {
     purchaseRequest: PurchaseRequestDetail;
+}
+
+const calculateTotalWeight = (items: PurchaseRequestItem[]) => {
+    return items.reduce((acc: number, item: PurchaseRequestItem) => acc + item.shipping.reduce((acc: number, shipping: any) => acc + shipping.weight * item.quantity, 0), 0);
 }
 
 export default function PRSummary({ purchaseRequest }: PRSummaryProps) {
@@ -15,8 +19,13 @@ export default function PRSummary({ purchaseRequest }: PRSummaryProps) {
                 </View>
                 <View style={styles.summaryCard}>
                     <Text style={styles.summaryLabel}>Margin %</Text>
-                    <Text style={styles.summaryValue}>{purchaseRequest.margin_percent}%</Text>
+                    <Text style={styles.summaryValue}>{purchaseRequest.margin_percent}</Text>
                 </View>
+                <View style={styles.summaryCard}>
+                    <Text style={styles.summaryLabel}>Total Weight (kg)</Text>
+                    <Text style={styles.summaryValue}>{calculateTotalWeight(purchaseRequest.items)}</Text>
+                </View>
+
             </View>
         </View>
     )

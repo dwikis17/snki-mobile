@@ -134,7 +134,7 @@ export default function CollapsibleItem({ item, index }: CollapsibleItemProps) {
                                 <View key={shipIndex} style={styles.shippingItem}>
                                     <View style={styles.shippingRow}>
                                         <Text style={styles.shippingLabel}>Weight:</Text>
-                                        <Text style={styles.shippingValue}>{ship.weight}g</Text>
+                                        <Text style={styles.shippingValue}>{ship.weight}kg</Text>
                                     </View>
                                     <View style={styles.shippingRow}>
                                         <Text style={styles.shippingLabel}>Dimensions:</Text>
@@ -144,7 +144,7 @@ export default function CollapsibleItem({ item, index }: CollapsibleItemProps) {
                                     </View>
                                     <View style={styles.shippingRow}>
                                         <Text style={styles.shippingLabel}>Volumetric Weight:</Text>
-                                        <Text style={styles.shippingValue}>{ship.volumetric_weight}g</Text>
+                                        <Text style={styles.shippingValue}>{ship.volumetric_weight}kg</Text>
                                     </View>
                                     <View style={styles.shippingRow}>
                                         <Text style={styles.shippingLabel}>Chargeable Weight:</Text>

@@ -1,4 +1,5 @@
 import { headers } from "@/contants/headers";
+import { getTokens } from "@/stores/SecureStore";
 
 
 type DeviceType = 'ios' | 'android';
@@ -8,15 +9,24 @@ interface RegisterDevicePayload {
 }
 
 export const registerDevice = async (payload: RegisterDevicePayload) => {
-
+    const token = await getTokens();
     const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/dashboard/user-device`, {
         method: 'POST',
-        headers: headers,
+        headers: {
+            ...headers,
+            'Authorization': `Bearer ${token.token}`,
+        },
         body: JSON.stringify(payload),
     });
-    console.log(response, 'response')
+
+    const data = await response.json();
+
     if (!response.ok) {
-        throw new Error('Failed to register device');
+        throw {
+            message: data.message || 'Failed to register device',
+            status: response.status,
+            data: data,
+        };
     }
-    return response.json();
+    return data;
 };

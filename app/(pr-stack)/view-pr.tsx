@@ -125,9 +125,7 @@ export default function ViewPR() {
                         style={styles.viewQuotationButton}
                         onPress={() => {
                             const quotationCode = purchaseRequest.code;
-                            console.log(quotationCode, 'quotationCode');
                             // Navigate to quotation view or handle the action
-                            console.log('View Quotation pressed');
                             // router.push(`/quotation/${purchaseRequest.id}`); // Uncomment when you have the route
                         }}
                         activeOpacity={0.7}
