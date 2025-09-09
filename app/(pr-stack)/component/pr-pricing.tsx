@@ -8,35 +8,37 @@ interface PRPricingProps {
 
 export default function PRPricing({ purchaseRequest }: PRPricingProps) {
     return (
-        <View style={styles.pricingSection}>
-            <Text style={styles.sectionTitle}>Pricing Summary</Text>
-            <View style={styles.pricingCard}>
-                <View style={styles.pricingRow}>
-                    <Text style={styles.pricingLabel}>Items Total</Text>
-                    <Text style={styles.pricingValue}>{formatCurrency(purchaseRequest.grand_total_item_price)}</Text>
-                </View>
-                <View style={styles.pricingRow}>
-                    <Text style={styles.pricingLabel}>Shipping</Text>
-                    <Text style={styles.pricingValue}>{formatCurrency(purchaseRequest.grand_total_shipping_price)}</Text>
-                </View>
-                <View style={styles.pricingRow}>
-                    <Text style={styles.pricingLabel}>Additional Costs</Text>
-                    <Text style={styles.pricingValue}>{formatCurrency(purchaseRequest.grand_total_additional_cost)}</Text>
-                </View>
-                <View style={styles.pricingRow}>
-                    <Text style={styles.pricingLabel}>Margin</Text>
-                    <Text style={styles.pricingValue}>{formatCurrency(purchaseRequest.grand_total_margin_price)}</Text>
-                </View>
-                <View style={[styles.pricingRow, styles.totalRow]}>
-                    <Text style={styles.totalLabel}>Grand Total</Text>
-                    <Text style={styles.totalValue}>
-                        {formatCurrency(
-                            purchaseRequest.grand_total_item_price +
-                            purchaseRequest.grand_total_shipping_price +
-                            purchaseRequest.grand_total_additional_cost +
-                            purchaseRequest.grand_total_margin_price
-                        )}
-                    </Text>
+        <View style={{ padding: 16 }}>
+            <View style={styles.pricingSection}>
+                <Text style={styles.sectionTitle}>Pricing Summary</Text>
+                <View style={styles.pricingCard}>
+                    <View style={styles.pricingRow}>
+                        <Text style={styles.pricingLabel}>Items Total</Text>
+                        <Text style={styles.pricingValue}>{formatCurrency(purchaseRequest.grand_total_item_price)}</Text>
+                    </View>
+                    <View style={styles.pricingRow}>
+                        <Text style={styles.pricingLabel}>Shipping</Text>
+                        <Text style={styles.pricingValue}>{formatCurrency(purchaseRequest.grand_total_shipping_price)}</Text>
+                    </View>
+                    <View style={styles.pricingRow}>
+                        <Text style={styles.pricingLabel}>Additional Costs</Text>
+                        <Text style={styles.pricingValue}>{formatCurrency(purchaseRequest.grand_total_additional_cost)}</Text>
+                    </View>
+                    <View style={styles.pricingRow}>
+                        <Text style={styles.pricingLabel}>Margin</Text>
+                        <Text style={styles.pricingValue}>{formatCurrency(purchaseRequest.grand_total_margin_price)}</Text>
+                    </View>
+                    <View style={[styles.pricingRow, styles.totalRow]}>
+                        <Text style={styles.totalLabel}>Grand Total</Text>
+                        <Text style={styles.totalValue}>
+                            {formatCurrency(
+                                purchaseRequest.grand_total_item_price +
+                                purchaseRequest.grand_total_shipping_price +
+                                purchaseRequest.grand_total_additional_cost +
+                                purchaseRequest.grand_total_margin_price
+                            )}
+                        </Text>
+                    </View>
                 </View>
             </View>
         </View>
@@ -45,8 +47,15 @@ export default function PRPricing({ purchaseRequest }: PRPricingProps) {
 
 const styles = StyleSheet.create({
     pricingSection: {
-        paddingHorizontal: 16,
-        marginBottom: 12,
+        padding: 16,
+
+        backgroundColor: '#fff',
+        borderRadius: 12,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 3,
     },
     sectionTitle: {
         fontSize: 16,
@@ -61,6 +70,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
+        marginBottom: 8,
     },
     pricingLabel: {
         fontSize: 14,

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, ActivityIndicator, Alert, TouchableWithoutFeedback, Keyboard, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { useAuthStore } from '@/stores/authStore';
 import { z } from 'zod';
 import { useForm, Controller } from 'react-hook-form';
@@ -34,67 +34,87 @@ export default function Login() {
     };
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.title}>Welcome Back</Text>
-            <Controller
-                control={control}
-                name="email"
-                render={({ field: { onChange, onBlur, value } }) => (
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Email"
-                        value={value}
-                        onChangeText={onChange}
-                        onBlur={onBlur}
-                        keyboardType="email-address"
-                        autoCapitalize="none"
-                        autoComplete="email"
-                        placeholderTextColor="#999"
-                    />
-                )}
-            />
-            {errors.email && <Text style={styles.error}>{errors.email.message}</Text>}
-            <Controller
-                control={control}
-                name="password"
-                render={({ field: { onChange, onBlur, value } }) => (
-                    <View style={styles.passwordContainer}>
-                        <TextInput
-                            style={styles.inputPassword}
-                            placeholder="Password"
-                            value={value}
-                            onChangeText={onChange}
-                            onBlur={onBlur}
-                            secureTextEntry={!showPassword}
-                            autoCapitalize="none"
-                            autoComplete="password"
-                            placeholderTextColor="#999"
+        <KeyboardAvoidingView
+            style={styles.keyboardAvoidingView}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        >
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                <ScrollView
+                    contentContainerStyle={styles.scrollContainer}
+                    keyboardShouldPersistTaps="handled"
+                >
+                    <View style={styles.container}>
+                        <Text style={styles.title}>Welcome Back</Text>
+                        <Controller
+                            control={control}
+                            name="email"
+                            render={({ field: { onChange, onBlur, value } }) => (
+                                <TextInput
+                                    style={styles.input}
+                                    placeholder="Email"
+                                    value={value}
+                                    onChangeText={onChange}
+                                    onBlur={onBlur}
+                                    keyboardType="email-address"
+                                    autoCapitalize="none"
+                                    autoComplete="email"
+                                    placeholderTextColor="#999"
+                                />
+                            )}
                         />
-                        <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeIcon}>
-                            <Ionicons name={showPassword ? 'eye-off' : 'eye'} size={24} color="#999" />
+                        {errors.email && <Text style={styles.error}>{errors.email.message}</Text>}
+                        <Controller
+                            control={control}
+                            name="password"
+                            render={({ field: { onChange, onBlur, value } }) => (
+                                <View style={styles.passwordContainer}>
+                                    <TextInput
+                                        style={styles.inputPassword}
+                                        placeholder="Password"
+                                        value={value}
+                                        onChangeText={onChange}
+                                        onBlur={onBlur}
+                                        secureTextEntry={!showPassword}
+                                        autoCapitalize="none"
+                                        autoComplete="password"
+                                        placeholderTextColor="#999"
+                                    />
+                                    <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeIcon}>
+                                        <Ionicons name={showPassword ? 'eye-off' : 'eye'} size={24} color="#999" />
+                                    </TouchableOpacity>
+                                </View>
+
+                            )}
+                        />
+
+                        {errors.password && <Text style={styles.error}>{errors.password.message}</Text>}
+                        <TouchableOpacity
+                            style={styles.button}
+                            onPress={handleSubmit(onSubmit)}
+                            disabled={isLoading}
+                        >
+                            {isLoading ? (
+                                <ActivityIndicator color="#fff" />
+                            ) : (
+                                <Text style={styles.buttonText}>Login</Text>
+                            )}
                         </TouchableOpacity>
                     </View>
-
-                )}
-            />
-
-            {errors.password && <Text style={styles.error}>{errors.password.message}</Text>}
-            <TouchableOpacity
-                style={styles.button}
-                onPress={handleSubmit(onSubmit)}
-                disabled={isLoading}
-            >
-                {isLoading ? (
-                    <ActivityIndicator color="#fff" />
-                ) : (
-                    <Text style={styles.buttonText}>Login</Text>
-                )}
-            </TouchableOpacity>
-        </View>
+                </ScrollView>
+            </TouchableWithoutFeedback>
+        </KeyboardAvoidingView>
     );
 }
 
 const styles = StyleSheet.create({
+    keyboardAvoidingView: {
+        flex: 1,
+        backgroundColor: '#fff',
+    },
+    scrollContainer: {
+        flexGrow: 1,
+        justifyContent: 'center',
+    },
     container: {
         flex: 1,
         padding: 20,

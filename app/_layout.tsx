@@ -13,6 +13,7 @@ import { useAuthStore } from '@/stores/authStore';
 import { Drawer } from 'expo-router/drawer';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { setupNotificationListeners } from '@/utils/notificationSetup';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -35,6 +36,16 @@ export default function RootLayout() {
   });
 
   const { isLoading, isLoggedIn } = useAuthStore();
+
+  useEffect(() => {
+    useAuthStore.getState().loadAuthState();
+  }, []);
+
+  useEffect(() => {
+    // Set up notification listeners
+    const cleanup = setupNotificationListeners();
+    return cleanup;
+  }, []);
 
   useEffect(() => {
     if (error) throw error;
@@ -80,10 +91,11 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
 }
 
 function RootLayoutNav() {
-  const colorScheme = useColorScheme();
+  // Force light theme for React Navigation
+  const colorScheme = 'light';
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+    <ThemeProvider value={DefaultTheme}>
       <GestureHandlerRootView style={{ flex: 1 }}>
         <Drawer
           drawerContent={props => <CustomDrawerContent {...props} />}

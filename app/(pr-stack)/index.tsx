@@ -93,9 +93,6 @@ export default function PRListScreen() {
             />
             {/* PR Cards */}
             <View style={{ marginTop: 8 }}>
-                {isFetching && !isLoading && (
-                    <LoadingRefresh isLoading={isFetching} />
-                )}
 
                 {prData.length === 0 && !isFetching && (
                     <Text style={{ color: '#888', textAlign: 'center', marginTop: 32 }}>No purchase requests found.</Text>

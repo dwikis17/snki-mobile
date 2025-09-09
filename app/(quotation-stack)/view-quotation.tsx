@@ -2,7 +2,7 @@ import { Text, View, StyleSheet, ScrollView, RefreshControl, ActivityIndicator, 
 import { router, useLocalSearchParams } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
 import { formatCurrency, formatDate, statusColor, statusTextColor } from "@/utils/CommonUtils";
-import { QuotationDetail } from "@/types/QuotationTypes";
+import { QuotationDetail, QuotationItem } from "@/types/QuotationTypes";
 import { approveQuotationOrDecline, fetchQuotationByCode } from '@/server-actions/QuotationAction';
 import CollapsibleItem from "../components/collapsible-item";
 import QuotationActionModal from "./component/quotation-action-modal";
@@ -66,8 +66,6 @@ export default function ViewQuotation() {
         enabled: !!code,
     });
 
-
-
     if (isLoading) {
         return (
             <View style={styles.centered}>
@@ -103,6 +101,10 @@ export default function ViewQuotation() {
 
     // TypeScript guard to ensure quotation is not null
     if (!quotation) return null;
+
+    const calculateItemTotalPrice = (items: QuotationItem[]) => {
+        return items.reduce((acc: number, item: QuotationItem) => acc + item.total_quoted_price.item_price, 0);
+    }
 
     const renderActionButtons = () => {
         if (quotation.status === 'pending' && authData?.frontend_path.includes("/quotation-approval/:quotationId")) {
@@ -156,7 +158,7 @@ export default function ViewQuotation() {
                         </View>
                         <View style={styles.summaryCard}>
                             <Text style={styles.summaryLabel}>Margin %</Text>
-                            <Text style={styles.summaryValue}>{quotation.margin_percent}%</Text>
+                            <Text style={styles.summaryValue}>{quotation.margin_percent}</Text>
                         </View>
                     </View>
                 </View>
@@ -167,7 +169,7 @@ export default function ViewQuotation() {
                     <View style={styles.pricingCard}>
                         <View style={styles.pricingRow}>
                             <Text style={styles.pricingLabel}>Items Total</Text>
-                            <Text style={styles.pricingValue}>{formatCurrency(quotation.shipping_price)}</Text>
+                            <Text style={styles.pricingValue}>{formatCurrency(calculateItemTotalPrice(quotation.items))}</Text>
                         </View>
                         <View style={styles.pricingRow}>
                             <Text style={styles.pricingLabel}>Shipping</Text>
