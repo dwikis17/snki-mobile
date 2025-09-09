@@ -74,7 +74,7 @@ export default function RootLayout() {
 
 function CustomDrawerContent(props: DrawerContentComponentProps) {
   // Only show allowed drawer items - exclude view-pr from drawer menu
-  const allowed = ['(tabs)', '(pr-stack)', '(quotation-stack)', '(purchase-order)', '(invoice-stack)', 'logout']; // Only show tabs and pr-stack in drawer
+  const allowed = ['(tabs)', '(pr-stack)', '(quotation-stack)', '(purchase-order)', '(invoice-stack)', '(tracking-stack)', 'logout']; // Only show tabs and pr-stack in drawer
   const filteredProps = {
     ...props,
     state: {
@@ -137,6 +137,13 @@ function RootLayoutNav() {
             options={{
               drawerLabel: 'Invoices',
               title: 'Invoices',
+            }}
+          />
+          <Drawer.Screen
+            name="(tracking-stack)"
+            options={{
+              drawerLabel: 'Tracking',
+              title: 'Tracking',
             }}
           />
           <Drawer.Screen
