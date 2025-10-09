@@ -3,45 +3,16 @@
     "name": "snki-mobile",
     "slug": "snki-mobile",
     "version": "1.0.0",
-    "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
-    "scheme": "snkimobile",
-    "userInterfaceStyle": "light",
     "newArchEnabled": true,
-    "splash": {
-      "image": "./assets/images/splash-icon.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
-    },
-    "ios": {
-      "supportsTablet": true,
-      "bundleIdentifier": "com.dwikis17.snkimobile",
-      "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false
-      }
-    },
-    "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
-      },
-      "googleServicesFile": "./android/app/google-services.json",
-      "edgeToEdgeEnabled": true,
-      "package": "com.dwikis17.snkimobile"
-    },
     "web": {
       "bundler": "metro",
       "output": "static",
       "favicon": "./assets/images/favicon.png"
     },
-    "plugins": [
-      "expo-router",
-      "expo-secure-store",
-      "expo-notifications"
-    ],
     "experiments": {
       "typedRoutes": true
     },
+    "scheme": "snkimobile",
     "extra": {
       "router": {},
       "eas": {

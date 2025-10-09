@@ -10,6 +10,7 @@ interface RegisterDevicePayload {
 
 export const registerDevice = async (payload: RegisterDevicePayload) => {
     const token = await getTokens();
+    console.log('Registering device:', payload);
     const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/dashboard/user-device`, {
         method: 'POST',
         headers: {
