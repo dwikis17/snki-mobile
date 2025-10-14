@@ -1,4 +1,5 @@
-import { Stack } from 'expo-router';
+import { router, Stack } from 'expo-router';
+import { TouchableOpacity } from 'react-native';
 
 export default function PRStackLayout() {
     return (
@@ -15,6 +16,7 @@ export default function PRStackLayout() {
                 options={{
                     title: 'View Purchase Request',
                     headerShown: true,
+                    headerBackVisible: true, // Force back button to show
                 }}
             />
         </Stack>

@@ -1,5 +1,5 @@
 import * as Notifications from 'expo-notifications';
-import { router } from 'expo-router';
+import { RelativePathString, router } from 'expo-router';
 import * as Linking from 'expo-linking';
 
 // Set up notification handler
@@ -16,57 +16,46 @@ Notifications.setNotificationHandler({
 export const setupNotificationListeners = () => {
     console.log('Setting up notification listeners');
 
-    Notifications.addNotificationResponseReceivedListener(response => {
-        const url = response.notification.request.content.data.url;
-        if (url) {
-            console.log('Opening URL:', url);
-            Linking.openURL(url as string);
-        }
-    });
     const notificationListener = Notifications.addNotificationReceivedListener(notification => {
         console.log('Notification received:', notification);
     });
 
     const responseListener = Notifications.addNotificationResponseReceivedListener(response => {
-        console.log('Notification response:', response);
 
-        // Handle deep linking navigation
-        const { screen, params } = response.notification.request.content.data as {
-            screen?: string;
-            params?: { code?: string }
-        };
+        const data = response.notification.request.content.data;
 
-        if (screen) {
-            // Map screen names to actual routes
-            switch (screen) {
-                case 'ViewPR':
-                    if (params?.code) {
-                        router.push(`/(pr-stack)/view-pr?code=${params.code}`);
-                    }
-                    break;
-                case 'ViewInvoice':
-                    if (params?.code) {
-                        router.push(`/(invoice-stack)/view-invoice?code=${params.code}`);
-                    }
-                    break;
-                case 'ViewQuotation':
-                    if (params?.code) {
-                        router.push(`/(quotation-stack)/view-quotation?code=${params.code}`);
-                    }
-                    break;
-                case 'ViewPurchaseOrder':
-                    if (params?.code) {
-                        router.push(`/(purchase-order)/view-purchase-order?code=${params.code}`);
-                    }
-                    break;
-                case 'ViewTracking':
-                    if (params?.code) {
-                        router.push(`/(tracking-stack)/view-tracking?code=${params.code}`);
-                    }
-                    break;
-                default:
-                    console.log('Unknown screen:', screen);
-                    break;
+        // Handle URL-based deep linking
+        if (data.link) {
+            console.log('Opening URL:', data.link);
+            // Navigate to the stack first, then to the specific screen
+            const url = data.link as string;
+            if (url.includes('view-pr')) {
+                router.push(`/(pr-stack)`);
+                setTimeout(() => {
+                    router.push(`/(pr-stack)/view-pr?code=${data.code}`);
+                }, 100);
+            } else if (url.includes('view-invoice')) {
+                router.push(`/(invoice-stack)`);
+                setTimeout(() => {
+                    router.push(`/(invoice-stack)/view-invoice?code=${data.code}`);
+                }, 100);
+            } else if (url.includes('view-quotation')) {
+                router.push(`/(quotation-stack)`);
+                setTimeout(() => {
+                    router.push(`/(quotation-stack)/view-quotation?code=${data.code}`);
+                }, 100);
+            } else if (url.includes('view-purchase-order')) {
+                router.push(`/(purchase-order)`);
+                setTimeout(() => {
+                    router.push(`/(purchase-order)/view-purchase-order?code=${data.code}`);
+                }, 100);
+            } else if (url.includes('view-tracking')) {
+                router.push(`/(tracking-stack)`);
+                setTimeout(() => {
+                    router.push(`/(tracking-stack)/view-tracking?code=${data.code}`);
+                }, 100);
+            } else {
+                router.push(url as RelativePathString);
             }
         }
     });

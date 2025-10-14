@@ -140,6 +140,7 @@ export default function ViewPR() {
     return (
         <>
             <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+
                 <PRHeader purchaseRequest={purchaseRequest} />
                 {isAbleToApprove && renderApproveOrDeclineButton()}
                 {renderViewPr()}
