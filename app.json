@@ -18,6 +18,12 @@
       "eas": {
         "projectId": "c95863ad-60e8-457b-a0d4-bc681bac0db2"
       }
+    },
+    "android": {
+      "package": "com.dwikis17.snkimobile"
+    },
+    "ios": {
+      "bundleIdentifier": "com.dwikis17.snkimobile"
     }
   }
 }

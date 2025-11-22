@@ -169,3 +169,10 @@ coverage/
 
 expo-env.d.ts
 # @end expo-cli
+
+# Local build artifacts
+android/app/src/debugOptimized/
+
+# Secrets
+google-services.json
+GoogleService-Info.plist
