@@ -27,6 +27,32 @@ export default function CollapsibleItem({ item, index }: CollapsibleItemProps) {
     // Check if this is a QuotationItem by checking for quotation-specific properties
     const isQuotationItem = 'unit_quoted_price' in item;
 
+    const calculateShippingPrice = (item: PurchaseRequestItem | QuotationItem) => {
+        if (!item.shipping) return 0;
+
+        if ('unit_quoted_price' in item) {
+            return (item as QuotationItem).shipping[0].price
+        }
+
+        return (item as PurchaseRequestItem).shipping[0].shipping_price
+    };
+
+    const getAdditionalCost = (item: PurchaseRequestItem | QuotationItem) => {
+        if ('unit_quoted_price' in item) {
+            return (item as QuotationItem).additional_cost?.reduce((total, cost) => total + cost.additional_cost, 0) || 0;
+        }
+
+        return (item as PurchaseRequestItem).total_additional_cost || 0;
+    };
+
+    const getMarginPrice = (item: PurchaseRequestItem | QuotationItem) => {
+        if ('unit_quoted_price' in item) {
+            return (item as QuotationItem).unit_quoted_price.margin_price * item.quantity || 0;
+        }
+
+        return (item as PurchaseRequestItem).margin_price * item.quantity || 0;
+    };
+
     return (
         <View style={styles.itemCard}>
             <TouchableOpacity
@@ -58,102 +84,97 @@ export default function CollapsibleItem({ item, index }: CollapsibleItemProps) {
                 ]}
             >
                 <View style={styles.itemDetails}>
-                    <View style={styles.itemRow}>
-                        <Text style={styles.itemLabel}>Quantity:</Text>
-                        <Text style={styles.itemValue}>{item.quantity} {item.item.unit}</Text>
-                    </View>
-                    <View style={styles.itemRow}>
-                        <Text style={styles.itemLabel}>Unit Price:</Text>
-                        <Text style={styles.itemValue}>{formatCurrency(item.item.price)}</Text>
-                    </View>
-                    <View style={styles.itemRow}>
-                        <Text style={styles.itemLabel}>Total Price:</Text>
-                        <Text style={styles.itemValue}>{formatCurrency(item.item_price)}</Text>
-                    </View>
-                    {item.specification && (
+                    {/* Header */}
+                    <View style={{ gap: 0 }}>
                         <View style={styles.itemRow}>
-                            <Text style={styles.itemLabel}>Specification:</Text>
-                            <Text style={styles.itemValue}>{item.specification}</Text>
+                            <Text style={styles.quotedPriceLabel}>Quantity:</Text>
+                            <Text style={styles.quotedPriceLabel}>{item.quantity} {item.item.unit}</Text>
+                        </View>
+                        {isQuotationItem && (
+                            <View style={styles.itemRow}>
+                                <Text style={styles.quotedPriceLabel}>Total Quoted Price:</Text>
+                                <Text style={styles.quotedPriceLabel}>{formatCurrency((item as QuotationItem).total_quoted_price.quoted_price)}</Text>
+                            </View>
+                        )}
+                    </View>
+
+                    {/* Detail */}
+                    <View style={{ gap: 2 }}>
+                        <View style={styles.itemRow}>
+                            <Text style={styles.itemLabel}>Detail:</Text>
+                        </View>
+                        <View style={styles.itemRow}>
+                            <Text style={styles.itemLabel}>Item Price:</Text>
+                            <Text style={styles.itemValue}>{formatCurrency(item.item_price * item.quantity)}</Text>
+                        </View>
+                        {/* shipping price */}
+                        <View style={styles.itemRow}>
+                            <Text style={styles.itemLabel}>Shipping Price:</Text>
+                            <Text style={styles.itemValue}>{formatCurrency(calculateShippingPrice(item))}</Text>
+                        </View>
+                    </View>
+
+                    <View style={styles.itemRow}>
+                        <Text style={styles.itemLabel}>Additional Cost:</Text>
+                        <Text style={styles.itemValue}>{formatCurrency(getAdditionalCost(item))}</Text>
+                    </View>
+
+                    {/* margin price */}
+                    <View style={styles.itemRow}>
+                        <Text style={styles.itemLabel}>Margin:</Text>
+                        <Text style={styles.itemValue}>{formatCurrency(getMarginPrice(item))}</Text>
+                    </View>
+                </View>
+
+                {/* Other Detail */}
+                <View style={styles.itemDetails}>
+                    <Text style={styles.sectionTitle}>Other Detail</Text>
+                    {isQuotationItem && (
+                        <View style={styles.itemRow}>
+                            <Text style={styles.itemLabel}>Unit Quoted Price</Text>
+                            <Text style={styles.itemValue}>
+                                {formatCurrency((item as QuotationItem).unit_quoted_price.quoted_price)}/Unit
+                            </Text>
                         </View>
                     )}
+                    <View style={styles.itemRow}>
+                        <Text style={styles.itemLabel}>Source</Text>
+                        <Text style={styles.itemValue}>{item.item.source}</Text>
+                    </View>
                     {item.estimated_arrival && (
                         <View style={styles.itemRow}>
-                            <Text style={styles.itemLabel}>ETA:</Text>
+                            <Text style={styles.itemLabel}>ETA</Text>
                             <Text style={styles.itemValue}>{formatDate(item.estimated_arrival)}</Text>
                         </View>
                     )}
-
-                    {/* Quotation-specific pricing information */}
-                    {isQuotationItem && (
-                        <>
-                            <View style={styles.itemRow}>
-                                <Text style={styles.itemLabel}>Unit Quoted Price:</Text>
-                                <Text style={styles.itemValue}>{formatCurrency((item as QuotationItem).unit_quoted_price.quoted_price)}</Text>
-                            </View>
-                            <View style={styles.itemRow}>
-                                <Text style={styles.itemLabel}>Total Quoted Price:</Text>
-                                <Text style={styles.itemValue}>{formatCurrency((item as QuotationItem).total_quoted_price.quoted_price)}</Text>
-                            </View>
-                        </>
-                    )}
+                    <View style={styles.itemRow}>
+                        <Text style={styles.itemLabel}>Notes</Text>
+                        <Text style={styles.itemValue}>{item.specification || '-'}</Text>
+                    </View>
                 </View>
 
-                {/* Shipping Information - Different for PR vs Quotation */}
+                {/* Shipping Detail */}
                 {item.shipping && item.shipping.length > 0 && (
-                    <View style={styles.shippingSection}>
-                        <Text style={styles.shippingTitle}>Shipping Details</Text>
+                    <View style={styles.itemDetails}>
+                        <Text style={styles.sectionTitle}>Shipping Detail</Text>
                         {isQuotationItem ? (
                             // Quotation shipping details
                             (item as QuotationItem).shipping.map((ship, shipIndex) => (
-                                <View key={shipIndex} style={styles.shippingItem}>
-                                    <View style={styles.shippingRow}>
-                                        <Text style={styles.shippingLabel}>Method:</Text>
-                                        <Text style={styles.shippingValue}>{ship.shipping_method_code}</Text>
-                                    </View>
-                                    <View style={styles.shippingRow}>
-                                        <Text style={styles.shippingLabel}>Service Type:</Text>
-                                        <Text style={styles.shippingValue}>{ship.service_type}</Text>
-                                    </View>
-                                    <View style={styles.shippingRow}>
-                                        <Text style={styles.shippingLabel}>Origin:</Text>
-                                        <Text style={styles.shippingValue}>{ship.origin_code}</Text>
-                                    </View>
-                                    <View style={styles.shippingRow}>
-                                        <Text style={styles.shippingLabel}>Destination:</Text>
-                                        <Text style={styles.shippingValue}>{ship.destination_code}</Text>
-                                    </View>
-                                    <View style={styles.shippingRow}>
-                                        <Text style={styles.shippingLabel}>Price:</Text>
-                                        <Text style={styles.shippingValue}>{formatCurrency(ship.price)}</Text>
-                                    </View>
+                                <View key={shipIndex} style={styles.itemRow}>
+                                    <Text style={styles.itemLabel}>
+                                        {ship.origin_code} → {ship.destination_code} ({ship.service_type})
+                                    </Text>
+                                    <Text style={styles.itemValue}>{formatCurrency(ship.price)}</Text>
                                 </View>
                             ))
                         ) : (
                             // Purchase Request shipping details
                             (item as PurchaseRequestItem).shipping.map((ship: any, shipIndex: number) => (
-                                <View key={shipIndex} style={styles.shippingItem}>
-                                    <View style={styles.shippingRow}>
-                                        <Text style={styles.shippingLabel}>Weight:</Text>
-                                        <Text style={styles.shippingValue}>{ship.weight}kg</Text>
-                                    </View>
-                                    <View style={styles.shippingRow}>
-                                        <Text style={styles.shippingLabel}>Dimensions:</Text>
-                                        <Text style={styles.shippingValue}>
-                                            {ship.length}×{ship.width}×{ship.height}cm
-                                        </Text>
-                                    </View>
-                                    <View style={styles.shippingRow}>
-                                        <Text style={styles.shippingLabel}>Volumetric Weight:</Text>
-                                        <Text style={styles.shippingValue}>{ship.volumetric_weight}kg</Text>
-                                    </View>
-                                    <View style={styles.shippingRow}>
-                                        <Text style={styles.shippingLabel}>Chargeable Weight:</Text>
-                                        <Text style={styles.shippingValue}>{ship.chargeable_weight}g</Text>
-                                    </View>
-                                    <View style={styles.shippingRow}>
-                                        <Text style={styles.shippingLabel}>Shipping Cost:</Text>
-                                        <Text style={styles.shippingValue}>{formatCurrency(ship.shipping_price)}</Text>
-                                    </View>
+                                <View key={shipIndex} style={styles.itemRow}>
+                                    <Text style={styles.itemLabel}>
+                                        Shipping {shipIndex + 1} ({ship.weight}kg)
+                                    </Text>
+                                    <Text style={styles.itemValue}>{formatCurrency(ship.shipping_price)}</Text>
                                 </View>
                             ))
                         )}
@@ -224,35 +245,22 @@ const styles = StyleSheet.create({
         color: '#6B7280',
         fontWeight: '500',
     },
+    quotedPriceLabel: {
+        fontSize: 14,
+        color: 'black',
+        fontWeight: 'bold',
+    },
     itemValue: {
         fontSize: 14,
         color: '#1F2937',
     },
-    shippingSection: {
-        padding: 16,
-        backgroundColor: '#F9FAFB',
+    sectionContainer: {
+        marginTop: 16,
     },
-    shippingTitle: {
-        fontSize: 16,
-        fontWeight: '600',
-        color: '#1F2937',
-    },
-    shippingItem: {
-        marginBottom: 12,
-    },
-    shippingRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        paddingVertical: 6,
-    },
-    shippingLabel: {
-        fontSize: 14,
+    sectionTitle: {
+        fontSize: 12,
         color: '#6B7280',
+        marginBottom: 8,
         fontWeight: '500',
-    },
-    shippingValue: {
-        fontSize: 14,
-        color: '#1F2937',
     },
 });

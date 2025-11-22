@@ -117,7 +117,12 @@ export type QuotationItem = {
         quoted_price: number;
     };
     shipping: Shipping[];
-    additional_cost: number | null;
+    additional_cost: AdditionalCost[] | null;
+};
+
+type AdditionalCost = {
+    category: string;
+    additional_cost: number;
 };
 
 export type QuotationDetail = {

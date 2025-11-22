@@ -99,59 +99,67 @@ export default function ViewPR() {
     const renderApproveOrDeclineButton = () => {
         if (purchaseRequest.status === 'pending') {
             return (
-                <View style={styles.buttonContainer}>
-                    <TouchableOpacity
-                        style={styles.declineButton}
-                        onPress={() => handleActionButton('decline')}
-                    >
-                        <Text style={styles.declineButtonText}>Decline</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        style={styles.approveButton}
-                        onPress={() => handleActionButton('approve')}
-                    >
-                        <Text style={styles.approveButtonText}>Approve</Text>
-                    </TouchableOpacity>
+                <View style={styles.fixedFooter}>
+                    <View style={styles.buttonContainer}>
+                        <TouchableOpacity
+                            style={styles.declineButton}
+                            onPress={() => handleActionButton('decline')}
+                        >
+                            <Text style={styles.declineButtonText}>Decline</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={styles.approveButton}
+                            onPress={() => handleActionButton('approve')}
+                        >
+                            <Text style={styles.approveButtonText}>Approve</Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
             );
         }
+        return null;
     };
 
     const renderViewPr = () => {
         if (isRenderViewPr) {
             return (
-                <View style={styles.viewQuotationContainer}>
+                <View style={styles.fixedFooter}>
                     <TouchableOpacity
                         style={styles.viewQuotationButton}
                         onPress={() => {
-                            const quotationCode = purchaseRequest.code;
-                            // Navigate to quotation view or handle the action
-                            // router.push(`/quotation/${purchaseRequest.id}`); // Uncomment when you have the route
+                            // const quotationCode = purchaseRequest.id;
+                            // router.push({
+                            //     pathname: '/(quotation-stack)/view-quotation',
+                            //     params: { code: quotationCode }
+                            // });
                         }}
                         activeOpacity={0.7}
                     >
-                        <Text style={styles.viewQuotationButtonText}>View PR</Text>
+                        <Text style={styles.viewQuotationButtonText}>View Quotation</Text>
                     </TouchableOpacity>
                 </View>
             );
         }
+        return null;
     };
 
     return (
-        <>
-            <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+        <View style={styles.mainContainer}>
+            <ScrollView
+                style={styles.container}
+                contentContainerStyle={styles.scrollContent}
+                showsVerticalScrollIndicator={false}
+            >
 
                 <PRHeader purchaseRequest={purchaseRequest} />
-                {isAbleToApprove && renderApproveOrDeclineButton()}
-                {renderViewPr()}
 
                 <PRSummary purchaseRequest={purchaseRequest} />
 
                 <PRPricing purchaseRequest={purchaseRequest} />
                 {/* Client Information */}
-                <View style={styles.infoSection}>
+                <View style={styles.sectionContainer}>
                     <Text style={styles.sectionTitle}>Client Information</Text>
-                    <View style={styles.infoCard}>
+                    <View style={styles.card}>
                         <View style={styles.infoRow}>
                             <Text style={styles.infoLabel}>Client ID</Text>
                             <Text style={styles.infoValue}>{purchaseRequest.client_id}</Text>
@@ -174,7 +182,7 @@ export default function ViewPR() {
                 </View>
 
                 {/* Items Section */}
-                <View style={styles.itemsSection}>
+                <View style={styles.sectionContainer}>
                     <Text style={styles.sectionTitle}>Items ({purchaseRequest.items.length})</Text>
                     {purchaseRequest.items.map((item, index) => (
                         <CollapsibleItem key={index} item={item} index={index} />
@@ -183,9 +191,9 @@ export default function ViewPR() {
 
                 {/* Additional Information */}
                 {purchaseRequest.reason && purchaseRequest.reason.length > 0 && (
-                    <View style={styles.reasonSection}>
+                    <View style={styles.sectionContainer}>
                         <Text style={styles.sectionTitle}>Additional Information</Text>
-                        <View style={styles.reasonCard}>
+                        <View style={styles.card}>
                             {purchaseRequest.reason.map((reason, index) => (
                                 <Text key={index} style={styles.reasonText}>
                                     {reason.reason}
@@ -201,10 +209,10 @@ export default function ViewPR() {
                         Last updated: {formatDate(purchaseRequest.updated_at)}
                     </Text>
                 </View>
-
-
             </ScrollView>
 
+            {isAbleToApprove && renderApproveOrDeclineButton()}
+            {renderViewPr()}
 
             <PRActionModal
                 visible={modalVisible}
@@ -213,15 +221,20 @@ export default function ViewPR() {
                 onConfirm={handleModalConfirm}
                 loading={isActionLoading}
             />
-        </>
+        </View>
     );
 }
 
 const styles = StyleSheet.create({
-    container: {
+    mainContainer: {
         flex: 1,
         backgroundColor: '#F6F8FB',
-        height: '100%',
+    },
+    container: {
+        flex: 1,
+    },
+    scrollContent: {
+        paddingBottom: 100, // Space for fixed footer
     },
     centered: {
         flex: 1,
@@ -229,165 +242,45 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: '#fff',
     },
-    actionButtonContainer: {
-        padding: 16,
+    fixedFooter: {
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0,
         backgroundColor: '#fff',
-        borderBottomWidth: 1,
-        borderBottomColor: '#F3F4F6',
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
+        padding: 16,
+        borderTopWidth: 1,
+        borderTopColor: '#E5E7EB',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: -2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 5,
     },
     buttonContainer: {
         flexDirection: 'row',
         gap: 12,
-        marginTop: 16,
+    },
+    sectionContainer: {
         paddingHorizontal: 16,
-        justifyContent: 'space-between',
+        marginBottom: 16,
     },
-    headerSection: {
-        backgroundColor: '#fff',
-        padding: 20,
-        marginBottom: 12,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-        elevation: 3,
-    },
-    headerTop: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: 8,
-    },
-    prCode: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        color: '#1F2937',
-    },
-    statusPill: {
-        paddingHorizontal: 12,
-        paddingVertical: 6,
-        borderRadius: 20,
-        minWidth: 80,
-        alignItems: 'center',
-    },
-    statusText: {
-        fontSize: 12,
-        fontWeight: '600',
-        textTransform: 'capitalize',
-    },
-    createdBy: {
-        fontSize: 14,
-        color: '#6B7280',
-        marginBottom: 4,
-    },
-    date: {
-        fontSize: 14,
-        color: '#6B7280',
-    },
-    summarySection: {
-        paddingHorizontal: 16,
-        marginBottom: 12,
-    },
-    summaryRow: {
-        flexDirection: 'row',
-        gap: 12,
-    },
-    summaryCard: {
-        flex: 1,
+    card: {
         backgroundColor: '#fff',
         padding: 16,
         borderRadius: 12,
-        alignItems: 'center',
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
+        shadowOpacity: 0.05,
         shadowRadius: 4,
-        elevation: 3,
-    },
-    itemsSection: {
-        paddingHorizontal: 16,
-        marginBottom: 12,
-    },
-    summaryLabel: {
-        fontSize: 12,
-        color: '#6B7280',
-        marginBottom: 4,
-    },
-    summaryValue: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        color: '#1F2937',
-    },
-    pricingSection: {
-        paddingHorizontal: 16,
-        marginBottom: 12,
+        elevation: 2,
     },
     sectionTitle: {
-        fontSize: 18,
-        fontWeight: '600',
-        color: '#1F2937',
-        marginBottom: 12,
-    },
-    pricingCard: {
-        backgroundColor: '#fff',
-        padding: 16,
-        borderRadius: 12,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-        elevation: 3,
-    },
-    pricingRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        paddingVertical: 8,
-        borderBottomWidth: 1,
-        borderBottomColor: '#F3F4F6',
-    },
-    pricingLabel: {
-        fontSize: 14,
-        color: '#6B7280',
-    },
-    pricingValue: {
-        fontSize: 14,
-        fontWeight: '500',
-        color: '#1F2937',
-    },
-    totalRow: {
-        borderBottomWidth: 0,
-        borderTopWidth: 2,
-        borderTopColor: '#E5E7EB',
-        marginTop: 8,
-        paddingTop: 12,
-    },
-    totalLabel: {
         fontSize: 16,
         fontWeight: '600',
-        color: '#1F2937',
-    },
-    totalValue: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: '#059669',
-    },
-    infoSection: {
-        paddingHorizontal: 16,
-        marginBottom: 12,
-    },
-    infoCard: {
-        backgroundColor: '#fff',
-        padding: 16,
-        borderRadius: 12,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-        elevation: 3,
+        color: '#374151',
+        marginBottom: 8,
+        marginLeft: 4,
     },
     infoRow: {
         flexDirection: 'row',
@@ -409,89 +302,6 @@ const styles = StyleSheet.create({
         flex: 2,
         textAlign: 'right',
     },
-
-    expandButton: {
-        width: 24,
-        height: 24,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    expandIcon: {
-        fontSize: 12,
-        color: '#6B7280',
-        fontWeight: 'bold',
-    },
-    collapsibleContent: {
-        overflow: 'hidden',
-    },
-    itemDetails: {
-        padding: 16,
-    },
-    itemRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        paddingVertical: 6,
-    },
-    itemLabel: {
-        fontSize: 14,
-        color: '#6B7280',
-        flex: 1,
-    },
-    itemValue: {
-        fontSize: 14,
-        fontWeight: '500',
-        color: '#1F2937',
-        flex: 2,
-        textAlign: 'right',
-    },
-    shippingSection: {
-        padding: 16,
-        backgroundColor: '#F9FAFB',
-        borderTopWidth: 1,
-        borderTopColor: '#F3F4F6',
-    },
-    shippingTitle: {
-        fontSize: 14,
-        fontWeight: '600',
-        color: '#374151',
-        marginBottom: 8,
-    },
-    shippingItem: {
-        backgroundColor: '#fff',
-        padding: 12,
-        borderRadius: 8,
-        marginBottom: 8,
-    },
-    shippingRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        paddingVertical: 4,
-    },
-    shippingLabel: {
-        fontSize: 12,
-        color: '#6B7280',
-    },
-    shippingValue: {
-        fontSize: 12,
-        fontWeight: '500',
-        color: '#374151',
-    },
-    reasonSection: {
-        paddingHorizontal: 16,
-        marginBottom: 12,
-    },
-    reasonCard: {
-        backgroundColor: '#fff',
-        padding: 16,
-        borderRadius: 12,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-        elevation: 3,
-    },
     reasonText: {
         fontSize: 14,
         color: '#374151',
@@ -499,7 +309,7 @@ const styles = StyleSheet.create({
         lineHeight: 20,
     },
     footer: {
-        padding: 16,
+        padding: 24,
         alignItems: 'center',
     },
     footerText: {
@@ -524,63 +334,41 @@ const styles = StyleSheet.create({
     },
     approveButton: {
         backgroundColor: '#059669',
-        padding: 16,
-        borderRadius: 8,
+        paddingVertical: 14,
+        borderRadius: 10,
         alignItems: 'center',
         justifyContent: 'center',
         flex: 1,
     },
     approveButtonText: {
         color: '#fff',
-        fontSize: 14,
-        fontWeight: 'bold',
+        fontSize: 16,
+        fontWeight: '600',
         textAlign: 'center',
     },
     declineButton: {
-        backgroundColor: '#DC2626',
-        padding: 16,
-        borderRadius: 8,
+        backgroundColor: '#fff',
+        paddingVertical: 14,
+        borderRadius: 10,
         alignItems: 'center',
         justifyContent: 'center',
         borderWidth: 1,
-        borderColor: '#E5E7EB',
+        borderColor: '#DC2626',
         flex: 1,
     },
     declineButtonText: {
-        color: '#fff',
-        fontSize: 14,
-        fontWeight: 'bold',
+        color: '#DC2626',
+        fontSize: 16,
+        fontWeight: '600',
         textAlign: 'center',
-    },
-    viewQuotationContainer: {
-        backgroundColor: '#fff',
-        alignItems: 'flex-start',
-        flexDirection: 'row',
-        justifyContent: 'flex-start',
-        padding: 16,
-    },
-    viewQuotationText: {
-        fontSize: 14,
-        fontWeight: '500',
-        color: '#1F2937',
-        textAlign: 'center',
-
     },
     viewQuotationButton: {
         backgroundColor: '#1976D2',
-        padding: 16,
-
-
-        borderRadius: 12,
+        paddingVertical: 14,
+        borderRadius: 10,
         alignItems: 'center',
         justifyContent: 'center',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-        elevation: 3,
-        alignSelf: 'center',
-        minWidth: 200,
+        width: '100%',
     },
     viewQuotationButtonText: {
         fontSize: 16,
@@ -588,5 +376,4 @@ const styles = StyleSheet.create({
         color: '#fff',
         textAlign: 'center',
     },
-
 });   
