@@ -115,9 +115,25 @@ export default function ViewPurchaseOrder() {
                                 <Text style={styles.itemPOLabel}>Due Date:</Text>
                                 <Text style={styles.itemPOValue}>{formatDate(itemPO.due_date)}</Text>
                             </View>
-                            <View style={styles.itemPORow}>
-                                <Text style={styles.itemPOLabel}>Items:</Text>
-                                <Text style={styles.itemPOValue}>{itemPO.items.length} items</Text>
+
+                            {/* Tracking Info for Item PO if available */}
+                            {itemPO.shipping?.shipment_route && (
+                                <View style={styles.itemPORow}>
+                                    <Text style={styles.itemPOLabel}>Tracking:</Text>
+                                    <Text style={styles.itemPOValue}>{itemPO.shipping.shipment_route.tracking_number}</Text>
+                                </View>
+                            )}
+
+                            <View style={styles.itemsContainer}>
+                                <Text style={styles.itemsLabel}>Items</Text>
+                                <View style={styles.itemsList}>
+                                    {itemPO.items.map((item, idx) => (
+                                        <View key={idx} style={styles.itemDetailRow}>
+                                            <Text style={styles.itemDetailName}>• {item.item.name}</Text>
+                                            <Text style={styles.itemDetailQuantity}>{item.quantity} {item.item.unit}</Text>
+                                        </View>
+                                    ))}
+                                </View>
                             </View>
                         </View>
                     ))}
@@ -425,5 +441,31 @@ const styles = StyleSheet.create({
     timestampValue: {
         fontSize: 14,
         color: '#1F2937',
+    },
+    itemsContainer: {
+        marginTop: 8,
+    },
+    itemsLabel: {
+        fontSize: 14,
+        color: '#6B7280',
+        fontWeight: '500',
+        marginBottom: 4,
+    },
+    itemsList: {
+        gap: 4,
+    },
+    itemDetailRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
+    itemDetailName: {
+        fontSize: 14,
+        color: '#374151',
+        flex: 1,
+    },
+    itemDetailQuantity: {
+        fontSize: 14,
+        color: '#6B7280',
     },
 }); 
