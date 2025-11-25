@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, TouchableWithoutFeedback, Dimensions, Modal } from 'react-native';
+import { View, StyleSheet, TouchableWithoutFeedback, Dimensions, Modal, Keyboard } from 'react-native';
 import { Text, Button, TextInput as PaperTextInput, Provider, RadioButton } from 'react-native-paper';
 import Colors from '@/constants/Colors';
 
@@ -26,12 +26,14 @@ export default function QuotationActionModal({
         if (action === 'decline' && !reason.trim()) {
             return; // Don't proceed if decline reason is empty
         }
+        Keyboard.dismiss();
         onConfirm(action === 'decline' ? reason : undefined, action === 'decline' ? declineType : undefined);
         setReason(''); // Reset reason when modal is closed
         setDeclineType('unqualified'); // Reset decline type when modal is closed
     };
 
     const handleDismiss = () => {
+        Keyboard.dismiss();
         setReason(''); // Reset reason when modal is dismissed
         setDeclineType('unqualified'); // Reset decline type when modal is dismissed
         onDismiss();
@@ -50,9 +52,12 @@ export default function QuotationActionModal({
                 animationType="fade"
                 onRequestClose={handleDismiss}
             >
-                <TouchableWithoutFeedback onPress={handleDismiss}>
+                <TouchableWithoutFeedback onPress={() => {
+                    Keyboard.dismiss();
+                    handleDismiss();
+                }}>
                     <View style={styles.overlay}>
-                        <TouchableWithoutFeedback onPress={() => { }}>
+                        <TouchableWithoutFeedback onPress={() => { Keyboard.dismiss() }}>
                             <View style={styles.modalContainer}>
                                 <View style={styles.content}>
                                     <Text style={styles.title}>
@@ -92,6 +97,7 @@ export default function QuotationActionModal({
                                                 style={styles.reasonInput}
                                                 placeholder="Enter the reason for declining this quotation..."
                                                 error={isDecline && !reason.trim()}
+                                                textColor="black"
                                             />
                                         </>
                                     )}
@@ -99,7 +105,10 @@ export default function QuotationActionModal({
                                     <View style={styles.buttonContainer}>
                                         <Button
                                             mode="outlined"
-                                            onPress={handleDismiss}
+                                            onPress={() => {
+                                                Keyboard.dismiss();
+                                                handleDismiss();
+                                            }}
                                             style={[styles.button, styles.cancelButton]}
                                             disabled={loading}
                                         >
@@ -115,6 +124,7 @@ export default function QuotationActionModal({
                                             ]}
                                             disabled={loading || (isDecline && !reason.trim())}
                                             loading={loading}
+                                            textColor='white'
                                         >
                                             {isApprove ? 'Approve' : 'Submit'}
                                         </Button>

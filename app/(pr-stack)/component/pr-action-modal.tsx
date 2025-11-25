@@ -96,6 +96,7 @@ export default function PRActionModal({
                                                 style={styles.reasonInput}
                                                 placeholder="Enter the reason for declining this purchase request..."
                                                 error={isDecline && !reason.trim()}
+                                                textColor="black"
                                             />
                                         </>
                                     )}

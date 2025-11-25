@@ -106,25 +106,36 @@ export default function ViewQuotation() {
         return items.reduce((acc: number, item: QuotationItem) => acc + item.total_quoted_price.item_price, 0);
     }
 
-    const renderActionButtons = () => {
+    const renderApproveOrDeclineButton = () => {
         if (quotation.status === 'pending' && authData?.frontend_path.includes("/quotation-approval/:quotationId")) {
             return (
-                <View style={styles.actionButtonsContainer}>
-                    <TouchableOpacity style={styles.declineButton} onPress={() => handleActionButton('decline')}>
-                        <Text style={styles.declineButtonText}>Decline</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.approveButton} onPress={() => handleActionButton('approve')}>
-                        <Text style={styles.approveButtonText}>Approve</Text>
-                    </TouchableOpacity>
+                <View style={styles.fixedFooter}>
+                    <View style={styles.buttonContainer}>
+                        <TouchableOpacity
+                            style={styles.declineButton}
+                            onPress={() => handleActionButton('decline')}
+                        >
+                            <Text style={styles.declineButtonText}>Decline</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={styles.approveButton}
+                            onPress={() => handleActionButton('approve')}
+                        >
+                            <Text style={styles.approveButtonText}>Approve</Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
             );
         }
         return null;
-    }
+    };
 
     return (
         <>
-            <ScrollView style={styles.container} showsVerticalScrollIndicator={false}
+            <ScrollView
+                style={styles.container}
+                contentContainerStyle={{ paddingBottom: 100 }}
+                showsVerticalScrollIndicator={false}
                 refreshControl={
                     <RefreshControl
                         refreshing={isLoading}
@@ -146,7 +157,7 @@ export default function ViewQuotation() {
                     </View>
                     <Text style={styles.createdBy}>Created by {quotation.creator.name}</Text>
                     <Text style={styles.date}>{formatDate(quotation.created_at)}</Text>
-                    {renderActionButtons()}
+
                 </View>
 
                 {/* Summary Cards */}
@@ -252,6 +263,8 @@ export default function ViewQuotation() {
                     </Text>
                 </View>
             </ScrollView>
+
+            {renderApproveOrDeclineButton()}
 
             <QuotationActionModal
                 visible={modalVisible}
@@ -472,33 +485,53 @@ const styles = StyleSheet.create({
     },
     approveButton: {
         backgroundColor: '#059669',
-        padding: 12,
+        paddingVertical: 14,
         borderRadius: 10,
-        flex: 1,
         alignItems: 'center',
+        justifyContent: 'center',
+        flex: 1,
     },
     approveButtonText: {
         color: '#fff',
         fontSize: 16,
-        fontWeight: 'bold',
+        fontWeight: '600',
         textAlign: 'center',
-    },
-    actionButtonsContainer: {
-        flexDirection: 'row',
-        gap: 12,
-        marginTop: 10,
     },
     declineButton: {
-        backgroundColor: '#dc3545',
-        padding: 12,
+        backgroundColor: '#fff',
+        paddingVertical: 14,
         borderRadius: 10,
-        flex: 1,
         alignItems: 'center',
+        justifyContent: 'center',
+        borderWidth: 1,
+        borderColor: '#DC2626',
+        flex: 1,
     },
     declineButtonText: {
-        color: '#fff',
+        color: '#DC2626',
         fontSize: 16,
-        fontWeight: 'bold',
+        fontWeight: '600',
         textAlign: 'center',
+    },
+    fixedFooter: {
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        backgroundColor: '#fff',
+        paddingHorizontal: 24,
+        paddingTop: 24,
+        paddingBottom: 32,
+        borderTopWidth: 1,
+        borderTopColor: '#E5E7EB',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: -2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 5,
+    },
+    buttonContainer: {
+        flexDirection: 'row',
+        gap: 16,
     },
 }); 

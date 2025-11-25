@@ -1,5 +1,4 @@
 import { router, Stack } from 'expo-router';
-import { TouchableOpacity } from 'react-native';
 
 export default function PRStackLayout() {
     return (
@@ -13,12 +12,12 @@ export default function PRStackLayout() {
             />
             <Stack.Screen
                 name="view-pr"
-                options={{
-                    title: 'View Purchase Request',
+                options={({ route }) => ({
+                    title: `View Purchase Request ${(route.params as any)?.code ?? ''}`,
                     headerShown: true,
                     headerBackVisible: true, // Force back button to show
-                }}
+                })}
             />
         </Stack>
     );
-} 
+}

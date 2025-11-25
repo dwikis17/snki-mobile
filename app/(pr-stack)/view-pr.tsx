@@ -248,7 +248,9 @@ const styles = StyleSheet.create({
         left: 0,
         right: 0,
         backgroundColor: '#fff',
-        padding: 16,
+        paddingHorizontal: 24,
+        paddingTop: 24,
+        paddingBottom: 32,
         borderTopWidth: 1,
         borderTopColor: '#E5E7EB',
         shadowColor: '#000',
@@ -259,7 +261,7 @@ const styles = StyleSheet.create({
     },
     buttonContainer: {
         flexDirection: 'row',
-        gap: 12,
+        gap: 16,
     },
     sectionContainer: {
         paddingHorizontal: 16,
