@@ -120,7 +120,7 @@ export default function ViewPurchaseOrder() {
                             {itemPO.shipping?.shipment_route && (
                                 <View style={styles.itemPORow}>
                                     <Text style={styles.itemPOLabel}>Tracking:</Text>
-                                    <Text style={styles.itemPOValue}>{itemPO.shipping.shipment_route.tracking_number}</Text>
+                                    <Text style={styles.itemPOValue}>{itemPO.shipping.shipment_route.tracking_number || 'N/A'}</Text>
                                 </View>
                             )}
 
@@ -175,7 +175,20 @@ export default function ViewPurchaseOrder() {
                             {shippingPO.shipping.shipment_route && (
                                 <View style={styles.shippingPORow}>
                                     <Text style={styles.shippingPOLabel}>Tracking:</Text>
-                                    <Text style={styles.shippingPOValue}>{shippingPO.shipping.shipment_route.tracking_number}</Text>
+                                    <Text style={styles.shippingPOValue}>{shippingPO.shipping.shipment_route.tracking_number || 'N/A'}</Text>
+                                </View>
+                            )}
+                            {shippingPO.shipping.items && shippingPO.shipping.items.length > 0 && (
+                                <View style={styles.itemsContainer}>
+                                    <Text style={styles.itemsLabel}>Items</Text>
+                                    <View style={styles.itemsList}>
+                                        {shippingPO.shipping.items.map((item, idx) => (
+                                            <View key={idx} style={styles.itemDetailRow}>
+                                                <Text style={styles.itemDetailName}>• {item.item.name}</Text>
+                                                <Text style={styles.itemDetailQuantity}>{item.quantity} {item.item.unit}</Text>
+                                            </View>
+                                        ))}
+                                    </View>
                                 </View>
                             )}
                         </View>
