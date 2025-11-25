@@ -12,6 +12,7 @@ export default function SearchBar({ search, setSearch }: SearchBarProps) {
                 style={styles.searchBar}
                 placeholder="Search PR number or creator"
                 value={search}
+                placeholderTextColor={'gray'}
                 onChangeText={setSearch}
                 clearButtonMode="while-editing"
             />
@@ -38,6 +39,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'transparent',
         borderWidth: 0,
         paddingHorizontal: 8,
+        color: 'black',
     },
     filterIcon: {
         width: 24,
