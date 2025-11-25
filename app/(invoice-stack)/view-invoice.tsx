@@ -177,7 +177,7 @@ export default function ViewInvoiceScreen() {
                 <Text style={styles.sectionTitle}>Pricing Summary</Text>
                 <View style={styles.pricingCard}>
                     <View style={styles.pricingRow}>
-                        <Text style={styles.pricingLabel}>Item Price</Text>
+                        <Text style={styles.pricingLabel}>Sub Total</Text>
                         <Text style={styles.pricingValue}>{formatCurrency(invoice.item_price)}</Text>
                     </View>
                     {invoice.is_taxed && (

@@ -125,7 +125,7 @@ export default function PRActionModal({
                                             loading={loading}
                                             textColor='white'
                                         >
-                                            {isApprove ? 'Approve' : 'Decline'}
+                                            {isApprove ? 'Approve' : 'Submit'}
                                         </Button>
                                     </View>
                                 </View>

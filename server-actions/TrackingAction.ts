@@ -38,6 +38,7 @@ export const fetchTrackingList = async (params: TrackingParams): Promise<Trackin
 export const fetchTrackingByCode = async (code: string): Promise<TrackingDetail> => {
     const fullUrl = `${apiUrl}/${code}`;
     const token = await getTokens();
+    console.log(fullUrl, "fullUrl")
 
     try {
         const response = await fetch(fullUrl, {
@@ -49,6 +50,7 @@ export const fetchTrackingByCode = async (code: string): Promise<TrackingDetail>
         });
 
         const data = await response.json();
+        console.log(data, "data")
 
         if (!response.ok) {
             throw new Error('Failed to fetch tracking detail');

@@ -22,6 +22,7 @@ export default function ViewTrackingScreen() {
         enabled: !!code,
     });
 
+
     const onRefresh = async () => {
         setRefreshing(true);
         await refetch();
@@ -131,10 +132,10 @@ export default function ViewTrackingScreen() {
             </View>
 
             {/* Shipment Batches */}
-            {tracking.shipment_batch.length > 0 && (
+            {(tracking.shipment_batch?.length ?? 0) > 0 && (
                 <View style={styles.section}>
-                    <Text style={styles.sectionTitle}>Shipment Batches ({tracking.shipment_batch.length})</Text>
-                    {tracking.shipment_batch.map((batch, index) => (
+                    <Text style={styles.sectionTitle}>Shipment Batches ({tracking.shipment_batch?.length ?? 0})</Text>
+                    {tracking.shipment_batch?.map((batch, index) => (
                         <View key={batch.id} style={styles.batchCard}>
                             <View style={styles.batchHeader}>
                                 <Text style={styles.batchNumber}>Batch #{batch.batch_number}</Text>
@@ -147,7 +148,7 @@ export default function ViewTrackingScreen() {
             )}
 
             {/* Delivery Orders & Packing Lists Tabs */}
-            {(tracking.delivery_orders.length > 0 || tracking.packing_list.length > 0) && (
+            {((tracking.delivery_orders?.length ?? 0) > 0 || (tracking.packing_list?.length ?? 0) > 0) && (
                 <View style={styles.section}>
                     <Text style={styles.sectionTitle}>Orders & Lists</Text>
 
@@ -158,7 +159,7 @@ export default function ViewTrackingScreen() {
                             onPress={() => setActiveTab('delivery')}
                         >
                             <Text style={[styles.tabText, activeTab === 'delivery' && styles.activeTabText]}>
-                                Delivery Orders ({tracking.delivery_orders.length})
+                                Delivery Orders ({tracking.delivery_orders?.length ?? 0})
                             </Text>
                         </TouchableOpacity>
                         <TouchableOpacity
@@ -166,7 +167,7 @@ export default function ViewTrackingScreen() {
                             onPress={() => setActiveTab('packing')}
                         >
                             <Text style={[styles.tabText, activeTab === 'packing' && styles.activeTabText]}>
-                                Packing Lists ({tracking.packing_list.length})
+                                Packing Lists ({tracking.packing_list?.length ?? 0})
                             </Text>
                         </TouchableOpacity>
                     </View>
@@ -175,8 +176,8 @@ export default function ViewTrackingScreen() {
                     <View style={styles.tabContent}>
                         {activeTab === 'delivery' && (
                             <View>
-                                {tracking.delivery_orders.length > 0 ? (
-                                    tracking.delivery_orders.map((order) => (
+                                {(tracking.delivery_orders?.length ?? 0) > 0 ? (
+                                    tracking.delivery_orders?.map((order) => (
                                         <View key={order.id} style={styles.orderCard}>
                                             <View style={styles.orderHeader}>
                                                 <Text style={styles.orderCode}>{order.code}</Text>
@@ -217,8 +218,8 @@ export default function ViewTrackingScreen() {
 
                         {activeTab === 'packing' && (
                             <View>
-                                {tracking.packing_list.length > 0 ? (
-                                    tracking.packing_list.map((list) => (
+                                {(tracking.packing_list?.length ?? 0) > 0 ? (
+                                    tracking.packing_list?.map((list) => (
                                         <View key={list.id} style={styles.packingCard}>
                                             <View style={styles.packingHeader}>
                                                 <Text style={styles.packingCode}>{list.code}</Text>
