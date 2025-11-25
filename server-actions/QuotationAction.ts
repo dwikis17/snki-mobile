@@ -64,7 +64,13 @@ export const fetchQuotationByCode = async (code: string): Promise<QuotationDetai
 };
 
 
-export const approveQuotationOrDecline = async (code: string, payload: any) => {
+export interface ApproveQuotation {
+    status: 'qualified' | 'unqualified' | 'unqualified_draft';
+    reason?: string;
+    purchase_order_code?: string;
+}
+
+export const approveQuotationOrDecline = async (code: string, payload: ApproveQuotation) => {
     const fullUrl = `${apiUrl}/approval/${code}`;
     const token = await getTokens();
 

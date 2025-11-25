@@ -7,7 +7,7 @@ interface QuotationActionModalProps {
     visible: boolean;
     onDismiss: () => void;
     action: 'approve' | 'decline' | null;
-    onConfirm: (reason?: string, declineType?: 'unqualified' | 'unqualified_draft') => void;
+    onConfirm: (reason?: string, declineType?: 'unqualified' | 'unqualified_draft', poNumber?: string) => void;
     loading?: boolean;
 }
 
@@ -19,6 +19,7 @@ export default function QuotationActionModal({
     loading = false
 }: QuotationActionModalProps) {
     const [reason, setReason] = useState('');
+    const [poNumber, setPoNumber] = useState('');
     const [declineType, setDeclineType] = useState<'unqualified' | 'unqualified_draft'>('unqualified');
 
 
@@ -26,15 +27,20 @@ export default function QuotationActionModal({
         if (action === 'decline' && !reason.trim()) {
             return; // Don't proceed if decline reason is empty
         }
+        if (action === 'approve' && !poNumber.trim()) {
+            return; // Don't proceed if PO number is empty
+        }
         Keyboard.dismiss();
-        onConfirm(action === 'decline' ? reason : undefined, action === 'decline' ? declineType : undefined);
+        onConfirm(action === 'decline' ? reason : undefined, action === 'decline' ? declineType : undefined, action === 'approve' ? poNumber : undefined);
         setReason(''); // Reset reason when modal is closed
+        setPoNumber(''); // Reset PO number when modal is closed
         setDeclineType('unqualified'); // Reset decline type when modal is closed
     };
 
     const handleDismiss = () => {
         Keyboard.dismiss();
         setReason(''); // Reset reason when modal is dismissed
+        setPoNumber(''); // Reset PO number when modal is dismissed
         setDeclineType('unqualified'); // Reset decline type when modal is dismissed
         onDismiss();
     };
@@ -66,10 +72,23 @@ export default function QuotationActionModal({
 
                                     <Text style={styles.message}>
                                         {isApprove
-                                            ? 'Are you sure you want to approve this quotation?'
+                                            ? 'Please enter the PO Number to approve this quotation.'
                                             : 'Please provide a reason for declining this quotation.'
                                         }
                                     </Text>
+
+                                    {isApprove && (
+                                        <PaperTextInput
+                                            mode="outlined"
+                                            label="PO Number"
+                                            value={poNumber}
+                                            onChangeText={setPoNumber}
+                                            style={styles.reasonInput}
+                                            placeholder="Enter PO Number..."
+                                            error={isApprove && !poNumber.trim()}
+                                            textColor="black"
+                                        />
+                                    )}
 
                                     {isDecline && (
                                         <>
@@ -122,7 +141,7 @@ export default function QuotationActionModal({
                                                 styles.button,
                                                 isApprove ? styles.approveButton : styles.declineButton
                                             ]}
-                                            disabled={loading || (isDecline && !reason.trim())}
+                                            disabled={loading || (isDecline && !reason.trim()) || (isApprove && !poNumber.trim())}
                                             loading={loading}
                                             textColor='white'
                                         >

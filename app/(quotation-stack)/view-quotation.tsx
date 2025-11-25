@@ -3,7 +3,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
 import { formatCurrency, formatDate, statusColor, statusTextColor } from "@/utils/CommonUtils";
 import { QuotationDetail, QuotationItem } from "@/types/QuotationTypes";
-import { approveQuotationOrDecline, fetchQuotationByCode } from '@/server-actions/QuotationAction';
+import { approveQuotationOrDecline, fetchQuotationByCode, ApproveQuotation } from '@/server-actions/QuotationAction';
 import CollapsibleItem from "../components/collapsible-item";
 import QuotationActionModal from "./component/quotation-action-modal";
 import { useState } from "react";
@@ -23,34 +23,31 @@ export default function ViewQuotation() {
         setModalVisible(true);
     };
 
-    const handleModalConfirm = async (reason?: string, declineType?: 'unqualified' | 'unqualified_draft') => {
+    const handleModalConfirm = async (reason?: string, declineType?: 'unqualified' | 'unqualified_draft', poNumber?: string) => {
+        setIsActionLoading(true);
         try {
-            setIsActionLoading(true);
             if (modalAction === 'approve') {
                 const payload = {
                     status: 'qualified',
-                    purchase_order_code: quotation?.code
-                };
-                await approveQuotationOrDecline(code, payload);
-                Alert.alert('Success', 'Quotation approved successfully');
+                    purchase_order_code: poNumber
+                }
+                await approveQuotationOrDecline(code!, payload as ApproveQuotation);
+
             } else if (modalAction === 'decline') {
+                const status = declineType === 'unqualified_draft' ? 'unqualified_draft' : 'unqualified';
                 const payload = {
-                    status: declineType,
+                    status: status,
                     reason: reason,
-                    purchase_order_code: quotation?.code
-                };
-                await approveQuotationOrDecline(code, payload);
-                Alert.alert('Success', 'Quotation declined successfully');
+                }
+                await approveQuotationOrDecline(code!, payload as ApproveQuotation);
             }
         } catch (error) {
-            Alert.alert('Error', 'Failed to process action');
             console.error('Error processing action:', error);
         } finally {
             setIsActionLoading(false);
-            setModalAction(null);
             setModalVisible(false);
-            router.push('/(quotation-stack)');
-            refetch();
+            setModalAction(null);
+            router.push('/');
         }
     };
 
