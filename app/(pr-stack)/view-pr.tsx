@@ -185,7 +185,7 @@ export default function ViewPR() {
                 <View style={styles.sectionContainer}>
                     <Text style={styles.sectionTitle}>Items ({purchaseRequest.items.length})</Text>
                     {purchaseRequest.items.map((item, index) => (
-                        <CollapsibleItem key={index} item={item} index={index} />
+                        <CollapsibleItem key={index} item={item} index={index} destinationCode={purchaseRequest.destination_code} />
                     ))}
                 </View>
 

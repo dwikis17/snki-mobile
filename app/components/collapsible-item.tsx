@@ -9,9 +9,10 @@ import { QuotationItem } from "@/types/QuotationTypes";
 interface CollapsibleItemProps {
     item: PurchaseRequestItem | QuotationItem;
     index: number;
+    destinationCode?: string;
 }
 
-export default function CollapsibleItem({ item, index }: CollapsibleItemProps) {
+export default function CollapsibleItem({ item, index, destinationCode }: CollapsibleItemProps) {
     const [isExpanded, setIsExpanded] = useState(false);
     const animatedHeight = useRef(new Animated.Value(0)).current;
 
@@ -227,7 +228,9 @@ export default function CollapsibleItem({ item, index }: CollapsibleItemProps) {
                                 {(item as PurchaseRequestItem).shipping.map((ship, index) => (
                                     <View key={index}>
                                         <View style={styles.itemRow}>
-                                            <Text style={styles.itemLabel}>Shipping Cost</Text>
+                                            <Text style={styles.itemLabel}>
+                                                {item.item.source} → {destinationCode || '-'}
+                                            </Text>
                                             <Text style={styles.itemValue}>{formatCurrency(ship.shipping_price)}</Text>
                                         </View>
                                     </View>
