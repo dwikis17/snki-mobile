@@ -90,6 +90,7 @@ type PurchaseOrderDetailItem = {
         specification: string;
         item_price: number;
         quantity: number;
+        packages: number;
         created_at: string;
         updated_at: string;
         item: {

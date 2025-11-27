@@ -13,6 +13,7 @@ interface CollapsibleItemProps {
 }
 
 export default function CollapsibleItem({ item, index, destinationCode }: CollapsibleItemProps) {
+    console.log(item, "item")
     const [isExpanded, setIsExpanded] = useState(false);
     const animatedHeight = useRef(new Animated.Value(0)).current;
 
@@ -222,17 +223,15 @@ export default function CollapsibleItem({ item, index, destinationCode }: Collap
                         )}
 
                         {/* Shipping Detail */}
-                        {(item as PurchaseRequestItem).shipping && (item as PurchaseRequestItem).shipping.length > 0 && (
+                        {(item as PurchaseRequestItem).shipping_prices && (item as PurchaseRequestItem).shipping_prices!.length > 0 && (
                             <View style={styles.sectionContainer}>
                                 <Text style={styles.sectionTitle}>Shipping Detail</Text>
-                                {(item as PurchaseRequestItem).shipping.map((ship, index) => (
-                                    <View key={index}>
-                                        <View style={styles.itemRow}>
-                                            <Text style={styles.itemLabel}>
-                                                {item.item.source} → {destinationCode || '-'}
-                                            </Text>
-                                            <Text style={styles.itemValue}>{formatCurrency(ship.shipping_price)}</Text>
-                                        </View>
+                                {(item as PurchaseRequestItem).shipping_prices!.map((ship, index) => (
+                                    <View key={index} style={styles.itemRow}>
+                                        <Text style={styles.itemLabel}>
+                                            {ship.origin_code} → {ship.destination_code} ({ship.service_type})
+                                        </Text>
+                                        <Text style={styles.itemValue}>{formatCurrency(ship.price)}</Text>
                                     </View>
                                 ))}
                             </View>

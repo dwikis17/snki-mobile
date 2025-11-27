@@ -213,7 +213,7 @@ const styles = StyleSheet.create({
         borderColor: '#E5E7EB',
     },
     declineButton: {
-        backgroundColor: '#dc3545',
+        backgroundColor: 'black',
         borderWidth: 1,
         borderColor: '#E5E7EB',
         color: '#fff',

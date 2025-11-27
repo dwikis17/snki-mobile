@@ -64,7 +64,7 @@ export default function TrackingListScreen() {
     };
 
     const handleCardPress = (item: Tracking) => {
-        router.push(`/(tracking-stack)/view-tracking?code=${item.quotation_code}`);
+        router.push(`/(tracking-stack)/view-tracking?code=${item.purchase_order_code}`);
     }
 
     return (

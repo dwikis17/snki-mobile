@@ -63,11 +63,20 @@ export type PurchaseRequestItem = {
         shipping_price: number;
     }[];
     additional_cost: any[];
-    shipping_prices: any | null;
+    shipping_prices: PurchaseRequestShippingPrice[] | null;
     total_item_price: number;
     total_shipping_price: number;
     total_additional_cost: number;
     margin_price: number;
+}
+
+export type PurchaseRequestShippingPrice = {
+    destination_code: string;
+    origin_code: string;
+    price: number;
+    service_type: string;
+    shipping_method_code: string;
+    shipping_method_id: number;
 }
 
 export type PurchaseRequestStatus = 'pending' | 'approved' | 'draft' | 'declined'

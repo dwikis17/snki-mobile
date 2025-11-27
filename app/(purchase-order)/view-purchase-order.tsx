@@ -130,7 +130,12 @@ export default function ViewPurchaseOrder() {
                                     {itemPO.items.map((item, idx) => (
                                         <View key={idx} style={styles.itemDetailRow}>
                                             <Text style={styles.itemDetailName}>• {item.item.name}</Text>
-                                            <Text style={styles.itemDetailQuantity}>{item.quantity} {item.item.unit}</Text>
+                                            <View style={{ alignItems: 'flex-end' }}>
+                                                <Text style={styles.itemDetailQuantity}>{item.quantity} {item.item.unit}</Text>
+                                                {item.packages > 0 && (
+                                                    <Text style={[styles.itemDetailQuantity, { fontSize: 12 }]}>{item.packages} Packages</Text>
+                                                )}
+                                            </View>
                                         </View>
                                     ))}
                                 </View>
@@ -185,7 +190,12 @@ export default function ViewPurchaseOrder() {
                                         {shippingPO.shipping.items.map((item, idx) => (
                                             <View key={idx} style={styles.itemDetailRow}>
                                                 <Text style={styles.itemDetailName}>• {item.item.name}</Text>
-                                                <Text style={styles.itemDetailQuantity}>{item.quantity} {item.item.unit}</Text>
+                                                <View style={{ alignItems: 'flex-end' }}>
+                                                    <Text style={styles.itemDetailQuantity}>{item.quantity} {item.item.unit}</Text>
+                                                    {item.packages > 0 && (
+                                                        <Text style={[styles.itemDetailQuantity, { fontSize: 12 }]}>{item.packages} Packages</Text>
+                                                    )}
+                                                </View>
                                             </View>
                                         ))}
                                     </View>

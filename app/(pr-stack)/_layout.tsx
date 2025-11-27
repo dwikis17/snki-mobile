@@ -13,7 +13,7 @@ export default function PRStackLayout() {
             <Stack.Screen
                 name="view-pr"
                 options={({ route }) => ({
-                    title: `View Purchase Request ${(route.params as any)?.code ?? ''}`,
+                    title: `View Purchase Request`,
                     headerShown: true,
                     headerBackVisible: true, // Force back button to show
                 })}

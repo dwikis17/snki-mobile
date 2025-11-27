@@ -229,7 +229,10 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.light.tint,
     },
     declineButton: {
-        backgroundColor: '#dc3545',
+        backgroundColor: 'black',
+        borderWidth: 1,
+        borderColor: '#E5E7EB',
+        color: '#fff',
     },
     declineTypeContainer: {
         marginBottom: 20,
