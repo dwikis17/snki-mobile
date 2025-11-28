@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useRef } from 'react';
-import { StyleSheet, ScrollView, RefreshControl, TouchableOpacity, Platform, View as RNView, LayoutChangeEvent } from 'react-native';
+import { StyleSheet, ScrollView, RefreshControl, TouchableOpacity, Platform, View as RNView, LayoutChangeEvent, Modal } from 'react-native';
 import { Text, View } from '@/components/Themed';
 import { useAuthStore } from '@/stores/authStore';
 import { useQuery } from '@tanstack/react-query';
@@ -150,21 +150,74 @@ export default function TabOneScreen() {
         </View>
 
         {/* Date Pickers */}
-        {showStartDatePicker && (
-          <DateTimePicker
-            value={new Date(filters.start_date)}
-            mode="date"
-            display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-            onChange={(e, date) => handleDateChange(e, date, 'start')}
-          />
-        )}
-        {showEndDatePicker && (
-          <DateTimePicker
-            value={new Date(filters.end_date)}
-            mode="date"
-            display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-            onChange={(e, date) => handleDateChange(e, date, 'end')}
-          />
+        {Platform.OS === 'ios' ? (
+          <>
+            <Modal
+              visible={showStartDatePicker}
+              transparent={true}
+              animationType="slide"
+              onRequestClose={() => setShowStartDatePicker(false)}
+            >
+              <View style={styles.modalContainer}>
+                <View style={styles.pickerContainer}>
+                  <View style={styles.pickerHeader}>
+                    <TouchableOpacity onPress={() => setShowStartDatePicker(false)}>
+                      <Text style={styles.doneButton}>Done</Text>
+                    </TouchableOpacity>
+                  </View>
+                  <DateTimePicker
+                    value={new Date(filters.start_date)}
+                    mode="date"
+                    display="spinner"
+                    onChange={(e, date) => handleDateChange(e, date, 'start')}
+                    textColor="black"
+                  />
+                </View>
+              </View>
+            </Modal>
+            <Modal
+              visible={showEndDatePicker}
+              transparent={true}
+              animationType="slide"
+              onRequestClose={() => setShowEndDatePicker(false)}
+            >
+              <View style={styles.modalContainer}>
+                <View style={styles.pickerContainer}>
+                  <View style={styles.pickerHeader}>
+                    <TouchableOpacity onPress={() => setShowEndDatePicker(false)}>
+                      <Text style={styles.doneButton}>Done</Text>
+                    </TouchableOpacity>
+                  </View>
+                  <DateTimePicker
+                    value={new Date(filters.end_date)}
+                    mode="date"
+                    display="spinner"
+                    onChange={(e, date) => handleDateChange(e, date, 'end')}
+                    textColor="black"
+                  />
+                </View>
+              </View>
+            </Modal>
+          </>
+        ) : (
+          <>
+            {showStartDatePicker && (
+              <DateTimePicker
+                value={new Date(filters.start_date)}
+                mode="date"
+                display="default"
+                onChange={(e, date) => handleDateChange(e, date, 'start')}
+              />
+            )}
+            {showEndDatePicker && (
+              <DateTimePicker
+                value={new Date(filters.end_date)}
+                mode="date"
+                display="default"
+                onChange={(e, date) => handleDateChange(e, date, 'end')}
+              />
+            )}
+          </>
         )}
 
         {/* Content */}
@@ -345,5 +398,28 @@ const styles = StyleSheet.create({
   errorText: {
     color: '#991b1b',
     fontSize: 14,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  pickerContainer: {
+    backgroundColor: 'white',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    paddingBottom: 20,
+  },
+  pickerHeader: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f3f4f6',
+  },
+  doneButton: {
+    color: '#2563eb',
+    fontSize: 16,
+    fontWeight: '600',
   },
 });
