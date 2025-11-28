@@ -71,9 +71,10 @@ const ProfitTopItemsChart: React.FC<ProfitTopItemsChartProps> = ({
                         <LineChart
                             areaChart
                             data={profitChartData}
-                            width={screenWidth - 80}
-                            height={200}
-                            spacing={40}
+                            focusEnabled={true}
+                            width={screenWidth - 150}
+                            height={150}
+                            spacing={200}
                             color="#8dd3c7"
                             startFillColor="#8dd3c7"
                             endFillColor="#8dd3c7"
@@ -83,13 +84,18 @@ const ProfitTopItemsChart: React.FC<ProfitTopItemsChartProps> = ({
                             noOfSections={4}
                             yAxisThickness={0}
                             xAxisThickness={0}
+                            yAxisTextStyle={{ color: 'black', fontSize: 10 }}
+                            yAxisLabelWidth={100}
+                            formatYLabel={(value) => formatCurrency(Number(value))}
                             xAxisLabelTextStyle={{ color: 'gray', fontSize: 10 }}
-                            onPress={(item: any, index: number, event: any) => {
+                            onFocus={(item: any, index: number, event: any) => {
                                 const x = event?.nativeEvent?.locationX;
                                 const y = event?.nativeEvent?.locationY;
+                                console.log("pressed")
                                 onPointPress(item, index, x, y);
                             }}
-                            hideDataPoints
+                            showDataPointOnFocus={true}
+
                             curved
                         />
                     </View>
