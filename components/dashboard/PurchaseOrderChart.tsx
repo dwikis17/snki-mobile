@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, Dimensions, Animated } from 'react-native';
 import { BarChart } from 'react-native-gifted-charts';
 import { ChartItem, StatisticsRequest, ExpenseItem } from '@/types/ReportingTypes';
 import { formatCurrency } from '@/utils/CommonUtils';
@@ -12,6 +12,17 @@ interface PurchaseOrderChartProps {
     expenseData?: ExpenseItem;
     dateRange?: StatisticsRequest;
     isLoading?: boolean;
+}
+
+interface StackItem {
+    color: string;
+    value: number;
+    name: string;
+}
+
+interface BarChartGroup {
+    label: string;
+    stacks: StackItem[];
 }
 
 const purchaseOrderConfig = {
@@ -27,6 +38,7 @@ const transformToStackData = (data: ChartItem[], keys: string[], config: any) =>
         stacks: keys.map(key => ({
             value: item.data[key] || 0,
             color: config[key].color,
+            name: config[key].label,
         })),
     }));
 };
@@ -70,6 +82,13 @@ const PurchaseOrderChart: React.FC<PurchaseOrderChartProps> = ({
 
     const chartData = data ? transformToStackData(data, ['draft', 'pending', 'purchased', 'cancelled'], purchaseOrderConfig) : [];
 
+    const [tooltip, setTooltip] = React.useState<{ visible: boolean; x: number; y: number; label: string; stacks: StackItem[] }>({ visible: false, x: 0, y: 0, label: '', stacks: [] });
+
+    function onBarPress(item: BarChartGroup, index: number, x: number, y: number) {
+        setTooltip({ visible: true, x: x ?? index * 40, y: y ?? 60, label: item.label, stacks: item.stacks });
+        setTimeout(() => setTooltip(t => ({ ...t, visible: false })), 3000);
+    }
+
     return (
         <View style={styles.container}>
             <View style={styles.card}>
@@ -85,12 +104,30 @@ const PurchaseOrderChart: React.FC<PurchaseOrderChartProps> = ({
                             noOfSections={4}
                             yAxisThickness={0}
                             xAxisThickness={0}
+                            onPress={(item: any, index: number, event: any) => {
+                                const x = event?.nativeEvent?.locationX;
+                                const y = event?.nativeEvent?.locationY;
+                                onBarPress(item as BarChartGroup, index, x, y);
+                            }}
                             xAxisLabelTextStyle={{ color: 'gray', fontSize: 10 }}
                         />
                         <Legend config={purchaseOrderConfig} />
                     </View>
                 ) : (
                     <Text style={styles.noData}>No data available</Text>
+                )}
+                {tooltip.visible && (
+                    <Animated.View style={[styles.tooltip, { left: tooltip.x, top: tooltip.y }]}>
+                        <Text style={styles.tooltipLabel}>{tooltip.label}</Text>
+                        {tooltip.stacks.map((stack, index) => (
+                            stack.value > 0 && (
+                                <View key={index} style={styles.tooltipRow}>
+                                    <View style={[styles.tooltipColor, { backgroundColor: stack.color }]} />
+                                    <Text style={styles.tooltipText}>{stack.name}: {stack.value}</Text>
+                                </View>
+                            )
+                        ))}
+                    </Animated.View>
                 )}
             </View>
 
@@ -207,6 +244,40 @@ const styles = StyleSheet.create({
     noDataText: {
         color: '#94a3b8',
         textAlign: 'center',
+    },
+    tooltip: {
+        position: 'absolute',
+        backgroundColor: '#1f2937',
+        padding: 8,
+        borderRadius: 4,
+        zIndex: 100,
+        elevation: 5,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+    },
+    tooltipLabel: {
+        color: '#9ca3af',
+        fontSize: 12,
+        fontWeight: '600',
+        marginBottom: 4,
+        textAlign: 'center',
+    },
+    tooltipRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 6,
+        marginVertical: 2,
+    },
+    tooltipColor: {
+        width: 8,
+        height: 8,
+        borderRadius: 2,
+    },
+    tooltipText: {
+        color: 'white',
+        fontSize: 11,
     }
 });
 

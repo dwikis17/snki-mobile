@@ -124,6 +124,7 @@ export default function PRActionModal({
                                             disabled={loading || (isDecline && !reason.trim())}
                                             loading={loading}
                                             textColor='white'
+                                            theme={{ colors: { onSurfaceDisabled: 'white' } }}
                                         >
                                             {isApprove ? 'Approve' : 'Submit'}
                                         </Button>
@@ -216,7 +217,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'black',
         borderWidth: 1,
         borderColor: '#E5E7EB',
-        color: '#fff',
+        color: 'white',
     },
     declineTypeContainer: {
         marginBottom: 20,

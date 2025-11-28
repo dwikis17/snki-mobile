@@ -13,7 +13,6 @@ import ProfitTopItemsChart from '@/components/dashboard/ProfitTopItemsChart';
 import InvoiceTrackingChart from '@/components/dashboard/InvoiceTrackingChart';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Ionicons } from '@expo/vector-icons';
-import FloatingTabBar from '@/components/dashboard/FloatingTabBar';
 
 export default function TabOneScreen() {
   const { user } = useAuthStore();

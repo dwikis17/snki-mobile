@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, Dimensions, Animated } from 'react-native';
 import { BarChart } from 'react-native-gifted-charts';
 import { ChartsData, ChartItem, StatisticsRequest } from '@/types/ReportingTypes';
 
@@ -9,6 +9,17 @@ interface InvoiceTrackingChartProps {
     data?: ChartsData;
     dateRange?: StatisticsRequest;
     isLoading?: boolean;
+}
+
+interface StackItem {
+    color: string;
+    value: number;
+    name: string;
+}
+
+interface BarChartGroup {
+    label: string;
+    stacks: StackItem[];
 }
 
 const invoiceConfig = {
@@ -30,6 +41,7 @@ const transformToStackData = (data: ChartItem[], keys: string[], config: any) =>
         stacks: keys.map(key => ({
             value: item.data[key] || 0,
             color: config[key].color,
+            name: config[key].label,
         })),
     }));
 };
@@ -61,6 +73,19 @@ const InvoiceTrackingChart: React.FC<InvoiceTrackingChartProps> = ({
     const invoiceData = data?.invoice ? transformToStackData(data.invoice, ['unpaid', 'paid'], invoiceConfig) : [];
     const trackingData = data?.tracking ? transformToStackData(data.tracking, ['preparing', 'in_transit', 'partially_arrived', 'completed', 'cancelled'], trackingConfig) : [];
 
+    const [invoiceTooltip, setInvoiceTooltip] = React.useState<{ visible: boolean; x: number; y: number; label: string; stacks: StackItem[] }>({ visible: false, x: 0, y: 0, label: '', stacks: [] });
+    const [trackingTooltip, setTrackingTooltip] = React.useState<{ visible: boolean; x: number; y: number; label: string; stacks: StackItem[] }>({ visible: false, x: 0, y: 0, label: '', stacks: [] });
+
+    function onInvoiceBarPress(item: BarChartGroup, index: number, x: number, y: number) {
+        setInvoiceTooltip({ visible: true, x: x ?? index * 40, y: y ?? 60, label: item.label, stacks: item.stacks });
+        setTimeout(() => setInvoiceTooltip(t => ({ ...t, visible: false })), 3000);
+    }
+
+    function onTrackingBarPress(item: BarChartGroup, index: number, x: number, y: number) {
+        setTrackingTooltip({ visible: true, x: x ?? index * 40, y: y ?? 60, label: item.label, stacks: item.stacks });
+        setTimeout(() => setTrackingTooltip(t => ({ ...t, visible: false })), 3000);
+    }
+
     return (
         <View style={styles.container}>
             {/* Invoice Chart */}
@@ -77,12 +102,30 @@ const InvoiceTrackingChart: React.FC<InvoiceTrackingChartProps> = ({
                             noOfSections={4}
                             yAxisThickness={0}
                             xAxisThickness={0}
+                            onPress={(item: any, index: number, event: any) => {
+                                const x = event?.nativeEvent?.locationX;
+                                const y = event?.nativeEvent?.locationY;
+                                onInvoiceBarPress(item as BarChartGroup, index, x, y);
+                            }}
                             xAxisLabelTextStyle={{ color: 'gray', fontSize: 10 }}
                         />
                         <Legend config={invoiceConfig} />
                     </View>
                 ) : (
                     <Text style={styles.noData}>No data available</Text>
+                )}
+                {invoiceTooltip.visible && (
+                    <Animated.View style={[styles.tooltip, { left: invoiceTooltip.x, top: invoiceTooltip.y }]}>
+                        <Text style={styles.tooltipLabel}>{invoiceTooltip.label}</Text>
+                        {invoiceTooltip.stacks.map((stack, index) => (
+                            stack.value > 0 && (
+                                <View key={index} style={styles.tooltipRow}>
+                                    <View style={[styles.tooltipColor, { backgroundColor: stack.color }]} />
+                                    <Text style={styles.tooltipText}>{stack.name}: {stack.value}</Text>
+                                </View>
+                            )
+                        ))}
+                    </Animated.View>
                 )}
             </View>
 
@@ -100,12 +143,30 @@ const InvoiceTrackingChart: React.FC<InvoiceTrackingChartProps> = ({
                             noOfSections={4}
                             yAxisThickness={0}
                             xAxisThickness={0}
+                            onPress={(item: any, index: number, event: any) => {
+                                const x = event?.nativeEvent?.locationX;
+                                const y = event?.nativeEvent?.locationY;
+                                onTrackingBarPress(item as BarChartGroup, index, x, y);
+                            }}
                             xAxisLabelTextStyle={{ color: 'gray', fontSize: 10 }}
                         />
                         <Legend config={trackingConfig} />
                     </View>
                 ) : (
                     <Text style={styles.noData}>No data available</Text>
+                )}
+                {trackingTooltip.visible && (
+                    <Animated.View style={[styles.tooltip, { left: trackingTooltip.x, top: trackingTooltip.y }]}>
+                        <Text style={styles.tooltipLabel}>{trackingTooltip.label}</Text>
+                        {trackingTooltip.stacks.map((stack, index) => (
+                            stack.value > 0 && (
+                                <View key={index} style={styles.tooltipRow}>
+                                    <View style={[styles.tooltipColor, { backgroundColor: stack.color }]} />
+                                    <Text style={styles.tooltipText}>{stack.name}: {stack.value}</Text>
+                                </View>
+                            )
+                        ))}
+                    </Animated.View>
                 )}
             </View>
         </View>
@@ -158,6 +219,40 @@ const styles = StyleSheet.create({
         color: '#9ca3af',
         padding: 20,
     },
+    tooltip: {
+        position: 'absolute',
+        backgroundColor: '#1f2937',
+        padding: 8,
+        borderRadius: 4,
+        zIndex: 100,
+        elevation: 5,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+    },
+    tooltipLabel: {
+        color: '#9ca3af',
+        fontSize: 12,
+        fontWeight: '600',
+        marginBottom: 4,
+        textAlign: 'center',
+    },
+    tooltipRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 6,
+        marginVertical: 2,
+    },
+    tooltipColor: {
+        width: 8,
+        height: 8,
+        borderRadius: 2,
+    },
+    tooltipText: {
+        color: 'white',
+        fontSize: 11,
+    }
 });
 
 export default InvoiceTrackingChart;

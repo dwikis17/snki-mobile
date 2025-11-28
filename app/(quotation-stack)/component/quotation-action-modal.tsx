@@ -143,6 +143,7 @@ export default function QuotationActionModal({
                                             ]}
                                             disabled={loading || (isDecline && !reason.trim()) || (isApprove && !poNumber.trim())}
                                             loading={loading}
+                                            theme={{ colors: { onSurfaceDisabled: 'white' } }}
                                             textColor='white'
                                         >
                                             {isApprove ? 'Approve' : 'Submit'}

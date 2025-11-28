@@ -1,10 +1,9 @@
 import React from 'react';
-import { View, Text, StyleSheet, Dimensions, Image, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Dimensions, Image, TouchableOpacity, Animated } from 'react-native';
 import { LineChart } from 'react-native-gifted-charts';
 import { ProfitLossData, TopItem, StatisticsRequest } from '@/types/ReportingTypes';
 import { formatCurrency } from '@/utils/CommonUtils';
 import { Ionicons } from '@expo/vector-icons';
-import { Picker } from '@react-native-picker/picker'; // Might need to install this or use a custom dropdown. I'll use a simple custom view for now to avoid extra deps if possible, or just buttons.
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -55,6 +54,13 @@ const ProfitTopItemsChart: React.FC<ProfitTopItemsChartProps> = ({
 
     const totalExpense = profitData?.total_expenses;
 
+    const [tooltip, setTooltip] = React.useState<{ visible: boolean; x: number; y: number; label: string; value: number | null }>({ visible: false, x: 0, y: 0, label: '', value: null });
+
+    function onPointPress(item: any, index: number, x: number, y: number) {
+        setTooltip({ visible: true, x: x ?? index * 40, y: y ?? 60, label: item.label, value: item.value });
+        setTimeout(() => setTooltip(t => ({ ...t, visible: false })), 3000);
+    }
+
     return (
         <View style={styles.container}>
             {/* Profit Chart */}
@@ -78,12 +84,23 @@ const ProfitTopItemsChart: React.FC<ProfitTopItemsChartProps> = ({
                             yAxisThickness={0}
                             xAxisThickness={0}
                             xAxisLabelTextStyle={{ color: 'gray', fontSize: 10 }}
+                            onPress={(item: any, index: number, event: any) => {
+                                const x = event?.nativeEvent?.locationX;
+                                const y = event?.nativeEvent?.locationY;
+                                onPointPress(item, index, x, y);
+                            }}
                             hideDataPoints
                             curved
                         />
                     </View>
                 ) : (
                     <Text style={styles.noData}>No data available</Text>
+                )}
+                {tooltip.visible && (
+                    <Animated.View style={[styles.tooltip, { left: tooltip.x, top: tooltip.y }]}>
+                        <Text style={styles.tooltipValue}>{formatCurrency(tooltip.value || 0)}</Text>
+                        <Text style={styles.tooltipLabel}>{tooltip.label}</Text>
+                    </Animated.View>
                 )}
             </View>
 
@@ -325,6 +342,30 @@ const styles = StyleSheet.create({
         fontSize: 11,
         color: '#6b7280',
     },
+
+    tooltip: {
+        position: 'absolute',
+        backgroundColor: '#1f2937',
+        padding: 8,
+        borderRadius: 4,
+        zIndex: 100,
+        elevation: 5,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+    },
+    tooltipValue: {
+        color: 'white',
+        fontWeight: 'bold',
+        fontSize: 12,
+        textAlign: 'center',
+    },
+    tooltipLabel: {
+        color: '#9ca3af',
+        fontSize: 10,
+        textAlign: 'center',
+    }
 });
 
 export default ProfitTopItemsChart;
