@@ -3,6 +3,7 @@
     "name": "snki-mobile",
     "slug": "snki-mobile",
     "version": "1.0.0",
+    "icon": "./assets/images/icon.png",
     "newArchEnabled": true,
     "web": {
       "bundler": "metro",
