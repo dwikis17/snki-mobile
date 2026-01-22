@@ -8,11 +8,11 @@
 
 /* Begin PBXBuildFile section */
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
-		2CC3BD981610D21FA20D8A33 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 7E0C150091B643D00B296CA3 /* PrivacyInfo.xcprivacy */; };
 		3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */; };
-		4E97E19A0C05EF1019E87701 /* libPods-snkimobile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 888C60F610CA66A2EABB46A7 /* libPods-snkimobile.a */; };
+		51522D667047E446E119D1EA /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = BE249B7267E6A9CEE1D3B828 /* PrivacyInfo.xcprivacy */; };
+		652995D76BB6D8E1E3E77943 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB7CA41D9BD0BF2172CCD301 /* ExpoModulesProvider.swift */; };
+		7990CD6FB60C4B500CCF3E41 /* libPods-snkimobile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CF010B4FC01E487B4D19A93E /* libPods-snkimobile.a */; };
 		BB2F792D24A3F905000567C9 /* Expo.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB2F792C24A3F905000567C9 /* Expo.plist */; };
-		EEE2F21DD2FF625CCA2ECEBA /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = E65D12678C1D2E17270A8FE3 /* ExpoModulesProvider.swift */; };
 		F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F11748412D0307B40044C1D9 /* AppDelegate.swift */; };
 /* End PBXBuildFile section */
 
@@ -20,16 +20,16 @@
 		13B07F961A680F5B00A75B9A /* snkimobile.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = snkimobile.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = snkimobile/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = snkimobile/Info.plist; sourceTree = "<group>"; };
-		6D8AF0F5DD3EB19478ABC349 /* Pods-snkimobile.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-snkimobile.release.xcconfig"; path = "Target Support Files/Pods-snkimobile/Pods-snkimobile.release.xcconfig"; sourceTree = "<group>"; };
-		7E0C150091B643D00B296CA3 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; name = PrivacyInfo.xcprivacy; path = snkimobile/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
-		888C60F610CA66A2EABB46A7 /* libPods-snkimobile.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-snkimobile.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		38F36D5852097BF49263AB5F /* Pods-snkimobile.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-snkimobile.release.xcconfig"; path = "Target Support Files/Pods-snkimobile/Pods-snkimobile.release.xcconfig"; sourceTree = "<group>"; };
+		440AADF06CE1B0CD0AA34115 /* Pods-snkimobile.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-snkimobile.debug.xcconfig"; path = "Target Support Files/Pods-snkimobile/Pods-snkimobile.debug.xcconfig"; sourceTree = "<group>"; };
 		AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = SplashScreen.storyboard; path = snkimobile/SplashScreen.storyboard; sourceTree = "<group>"; };
 		BB2F792C24A3F905000567C9 /* Expo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Expo.plist; sourceTree = "<group>"; };
-		E65D12678C1D2E17270A8FE3 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-snkimobile/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
+		BE249B7267E6A9CEE1D3B828 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; name = PrivacyInfo.xcprivacy; path = snkimobile/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		CF010B4FC01E487B4D19A93E /* libPods-snkimobile.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-snkimobile.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		EB7CA41D9BD0BF2172CCD301 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-snkimobile/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		F11748412D0307B40044C1D9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = snkimobile/AppDelegate.swift; sourceTree = "<group>"; };
 		F11748442D0722820044C1D9 /* snkimobile-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "snkimobile-Bridging-Header.h"; path = "snkimobile/snkimobile-Bridging-Header.h"; sourceTree = "<group>"; };
-		FEEF4A25EEC9362AC998CFDC /* Pods-snkimobile.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-snkimobile.debug.xcconfig"; path = "Target Support Files/Pods-snkimobile/Pods-snkimobile.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -37,7 +37,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4E97E19A0C05EF1019E87701 /* libPods-snkimobile.a in Frameworks */,
+				7990CD6FB60C4B500CCF3E41 /* libPods-snkimobile.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -53,7 +53,7 @@
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */,
-				7E0C150091B643D00B296CA3 /* PrivacyInfo.xcprivacy */,
+				BE249B7267E6A9CEE1D3B828 /* PrivacyInfo.xcprivacy */,
 			);
 			name = snkimobile;
 			sourceTree = "<group>";
@@ -62,26 +62,9 @@
 			isa = PBXGroup;
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				888C60F610CA66A2EABB46A7 /* libPods-snkimobile.a */,
+				CF010B4FC01E487B4D19A93E /* libPods-snkimobile.a */,
 			);
 			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		31E7B986E77539E452BC8152 /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				FEEF4A25EEC9362AC998CFDC /* Pods-snkimobile.debug.xcconfig */,
-				6D8AF0F5DD3EB19478ABC349 /* Pods-snkimobile.release.xcconfig */,
-			);
-			path = Pods;
-			sourceTree = "<group>";
-		};
-		47FB546A7E10C3A6A8F1CF91 /* ExpoModulesProviders */ = {
-			isa = PBXGroup;
-			children = (
-				D9835D295804E92A608C9895 /* snkimobile */,
-			);
-			name = ExpoModulesProviders;
 			sourceTree = "<group>";
 		};
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
@@ -98,8 +81,8 @@
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
-				31E7B986E77539E452BC8152 /* Pods */,
-				47FB546A7E10C3A6A8F1CF91 /* ExpoModulesProviders */,
+				AC3F7358F86AF87CC2C25D52 /* Pods */,
+				F4E1EF6E3546ED46090AC4B6 /* ExpoModulesProviders */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -114,6 +97,16 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		AC3F7358F86AF87CC2C25D52 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				440AADF06CE1B0CD0AA34115 /* Pods-snkimobile.debug.xcconfig */,
+				38F36D5852097BF49263AB5F /* Pods-snkimobile.release.xcconfig */,
+			);
+			name = Pods;
+			path = Pods;
+			sourceTree = "<group>";
+		};
 		BB2F792B24A3F905000567C9 /* Supporting */ = {
 			isa = PBXGroup;
 			children = (
@@ -123,12 +116,20 @@
 			path = snkimobile/Supporting;
 			sourceTree = "<group>";
 		};
-		D9835D295804E92A608C9895 /* snkimobile */ = {
+		D9BF0FD40CEB43E241ED67AB /* snkimobile */ = {
 			isa = PBXGroup;
 			children = (
-				E65D12678C1D2E17270A8FE3 /* ExpoModulesProvider.swift */,
+				EB7CA41D9BD0BF2172CCD301 /* ExpoModulesProvider.swift */,
 			);
 			name = snkimobile;
+			sourceTree = "<group>";
+		};
+		F4E1EF6E3546ED46090AC4B6 /* ExpoModulesProviders */ = {
+			isa = PBXGroup;
+			children = (
+				D9BF0FD40CEB43E241ED67AB /* snkimobile */,
+			);
+			name = ExpoModulesProviders;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -139,13 +140,13 @@
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "snkimobile" */;
 			buildPhases = (
 				08A4A3CD28434E44B6B9DE2E /* [CP] Check Pods Manifest.lock */,
-				1F2E7E8687086A1A6E0E6C1D /* [Expo] Configure project */,
+				CB67C073D7418B598D92AE52 /* [Expo] Configure project */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				800E24972A6A228C8D4807E9 /* [CP] Copy Pods Resources */,
-				F94B1D41E2FFCD07D728C291 /* [CP] Embed Pods Frameworks */,
+				08F8121C283B71CBAA0554F8 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -195,7 +196,7 @@
 				BB2F792D24A3F905000567C9 /* Expo.plist in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */,
-				2CC3BD981610D21FA20D8A33 /* PrivacyInfo.xcprivacy in Resources */,
+				51522D667047E446E119D1EA /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -241,29 +242,27 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		1F2E7E8687086A1A6E0E6C1D /* [Expo] Configure project */ = {
+		08F8121C283B71CBAA0554F8 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
-			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
 			files = (
 			);
-			inputFileListPaths = (
-			);
 			inputPaths = (
-				"$(SRCROOT)/.xcode.env",
-				"$(SRCROOT)/.xcode.env.local",
-				"$(SRCROOT)/snkimobile/snkimobile.entitlements",
-				"$(SRCROOT)/Pods/Target Support Files/Pods-snkimobile/expo-configure-project.sh",
+				"${PODS_ROOT}/Target Support Files/Pods-snkimobile/Pods-snkimobile-frameworks.sh",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/React-Core-prebuilt/React.framework/React",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/ReactNativeDependencies/ReactNativeDependencies.framework/ReactNativeDependencies",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/hermes-engine/Pre-built/hermes.framework/hermes",
 			);
-			name = "[Expo] Configure project";
-			outputFileListPaths = (
-			);
+			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
-				"$(SRCROOT)/Pods/Target Support Files/Pods-snkimobile/ExpoModulesProvider.swift",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/React.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ReactNativeDependencies.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/hermes.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# This script configures Expo modules and generates the modules provider file.\nbash -l -c \"./Pods/Target\\ Support\\ Files/Pods-snkimobile/expo-configure-project.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-snkimobile/Pods-snkimobile-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
 		};
 		800E24972A6A228C8D4807E9 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -303,27 +302,29 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-snkimobile/Pods-snkimobile-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		F94B1D41E2FFCD07D728C291 /* [CP] Embed Pods Frameworks */ = {
+		CB67C073D7418B598D92AE52 /* [Expo] Configure project */ = {
 			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
 			files = (
 			);
-			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-snkimobile/Pods-snkimobile-frameworks.sh",
-				"${PODS_XCFRAMEWORKS_BUILD_DIR}/React-Core-prebuilt/React.framework/React",
-				"${PODS_XCFRAMEWORKS_BUILD_DIR}/ReactNativeDependencies/ReactNativeDependencies.framework/ReactNativeDependencies",
-				"${PODS_XCFRAMEWORKS_BUILD_DIR}/hermes-engine/Pre-built/hermes.framework/hermes",
+			inputFileListPaths = (
 			);
-			name = "[CP] Embed Pods Frameworks";
+			inputPaths = (
+				"$(SRCROOT)/.xcode.env",
+				"$(SRCROOT)/.xcode.env.local",
+				"$(SRCROOT)/snkimobile/snkimobile.entitlements",
+				"$(SRCROOT)/Pods/Target Support Files/Pods-snkimobile/expo-configure-project.sh",
+			);
+			name = "[Expo] Configure project";
+			outputFileListPaths = (
+			);
 			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/React.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ReactNativeDependencies.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/hermes.framework",
+				"$(SRCROOT)/Pods/Target Support Files/Pods-snkimobile/ExpoModulesProvider.swift",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-snkimobile/Pods-snkimobile-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
+			shellScript = "# This script configures Expo modules and generates the modules provider file.\nbash -l -c \"./Pods/Target\\ Support\\ Files/Pods-snkimobile/expo-configure-project.sh\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -333,7 +334,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */,
-				EEE2F21DD2FF625CCA2ECEBA /* ExpoModulesProvider.swift in Sources */,
+				652995D76BB6D8E1E3E77943 /* ExpoModulesProvider.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -342,13 +343,12 @@
 /* Begin XCBuildConfiguration section */
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = FEEF4A25EEC9362AC998CFDC /* Pods-snkimobile.debug.xcconfig */;
+			baseConfigurationReference = 440AADF06CE1B0CD0AA34115 /* Pods-snkimobile.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = snkimobile/snkimobile.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 6YQB49MLC8;
 				ENABLE_BITCODE = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
@@ -368,28 +368,23 @@
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
 				PRODUCT_BUNDLE_IDENTIFIER = com.dwikis17.snkimobile;
-				PRODUCT_NAME = "snkimobile";
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
-				SUPPORTS_MACCATALYST = NO;
-				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
-				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				PRODUCT_NAME = snkimobile;
 				SWIFT_OBJC_BRIDGING_HEADER = "snkimobile/snkimobile-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1";
+				TARGETED_DEVICE_FAMILY = 1;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Debug;
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 6D8AF0F5DD3EB19478ABC349 /* Pods-snkimobile.release.xcconfig */;
+			baseConfigurationReference = 38F36D5852097BF49263AB5F /* Pods-snkimobile.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = snkimobile/snkimobile.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 6YQB49MLC8;
 				INFOPLIST_FILE = snkimobile/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -404,14 +399,10 @@
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
 				PRODUCT_BUNDLE_IDENTIFIER = com.dwikis17.snkimobile;
-				PRODUCT_NAME = "snkimobile";
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
-				SUPPORTS_MACCATALYST = NO;
-				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
-				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				PRODUCT_NAME = snkimobile;
 				SWIFT_OBJC_BRIDGING_HEADER = "snkimobile/snkimobile-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1";
+				TARGETED_DEVICE_FAMILY = 1;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Release;
