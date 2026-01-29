@@ -30,6 +30,7 @@ export default function PurchaseOrderListScreen() {
     const [statusTab, setStatusTab] = useState('all');
     const [refreshing, setRefreshing] = useState(false);
     const [selectedStatus, setSelectedStatus] = useState<PurchaseOrderStatus | ''>('');
+    const [allPurchaseOrderData, setAllPurchaseOrderData] = useState<PurchaseOrder[]>([]);
     const [filters, setFilters] = useState<PurchaseOrderParams>({
         page,
         limit,
@@ -56,7 +57,26 @@ export default function PurchaseOrderListScreen() {
     const purchaseOrderData = data?.data || [];
     const pagination = meta?.pagination;
 
+    // Accumulate data when new page loads
     useEffect(() => {
+        if (purchaseOrderData.length > 0) {
+            if (page === 1) {
+                setAllPurchaseOrderData(purchaseOrderData);
+            } else {
+                setAllPurchaseOrderData(prev => {
+                    const existingIds = new Set(prev.map(item => item.id));
+                    const newItems = purchaseOrderData.filter(item => !existingIds.has(item.id));
+                    return [...prev, ...newItems];
+                });
+            }
+        } else if (page === 1) {
+            setAllPurchaseOrderData([]);
+        }
+    }, [purchaseOrderData, page]);
+
+    useEffect(() => {
+        // Reset page to 1 when search changes
+        setPage(1);
         setFilters(prev => ({
             ...prev,
             purchase_order_code: debouncedSearch
@@ -65,6 +85,7 @@ export default function PurchaseOrderListScreen() {
 
     const onRefresh = async () => {
         setRefreshing(true);
+        setPage(1); // Reset to first page on refresh
         await refetch();
         setRefreshing(false);
     };
@@ -99,11 +120,11 @@ export default function PurchaseOrderListScreen() {
             {/* Purchase Order Cards */}
             <View style={{ marginTop: 8 }}>
 
-                {purchaseOrderData.length === 0 && !isFetching && (
+                {allPurchaseOrderData.length === 0 && !isFetching && (
                     <Text style={{ color: '#888', textAlign: 'center', marginTop: 32 }}>No purchase orders found.</Text>
                 )}
 
-                {purchaseOrderData.map((item) => (
+                {allPurchaseOrderData.map((item) => (
                     <PurchaseOrderCardComponent
                         key={item.id}
                         item={item}

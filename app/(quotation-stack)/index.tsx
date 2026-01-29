@@ -31,6 +31,7 @@ export default function QuotationListScreen() {
     const [statusTab, setStatusTab] = useState('all');
     const [refreshing, setRefreshing] = useState(false);
     const [selectedStatus, setSelectedStatus] = useState<QuotationStatus | ''>('');
+    const [allQuotationData, setAllQuotationData] = useState<QuotationList[]>([]);
     const [filters, setFilters] = useState<QuotationParams>({
         page,
         limit,
@@ -57,7 +58,26 @@ export default function QuotationListScreen() {
     const quotationData = data?.data || [];
     const pagination = meta?.pagination;
 
+    // Accumulate data when new page loads
     useEffect(() => {
+        if (quotationData.length > 0) {
+            if (page === 1) {
+                setAllQuotationData(quotationData);
+            } else {
+                setAllQuotationData(prev => {
+                    const existingIds = new Set(prev.map(item => item.id));
+                    const newItems = quotationData.filter(item => !existingIds.has(item.id));
+                    return [...prev, ...newItems];
+                });
+            }
+        } else if (page === 1) {
+            setAllQuotationData([]);
+        }
+    }, [quotationData, page]);
+
+    useEffect(() => {
+        // Reset page to 1 when search changes
+        setPage(1);
         setFilters(prev => ({
             ...prev,
             quotation_code: debouncedSearch
@@ -66,6 +86,7 @@ export default function QuotationListScreen() {
 
     const onRefresh = async () => {
         setRefreshing(true);
+        setPage(1); // Reset to first page on refresh
         await refetch();
         setRefreshing(false);
     };
@@ -103,11 +124,11 @@ export default function QuotationListScreen() {
                     <LoadingRefresh isLoading={isFetching} />
                 )}
 
-                {quotationData.length === 0 && !isFetching && (
+                {allQuotationData.length === 0 && !isFetching && (
                     <Text style={{ color: '#888', textAlign: 'center', marginTop: 32 }}>No quotations found.</Text>
                 )}
 
-                {quotationData.map((item) => (
+                {allQuotationData.map((item) => (
                     <QuotationCardComponent
                         key={item.id}
                         item={item}

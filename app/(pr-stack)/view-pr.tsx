@@ -161,7 +161,7 @@ export default function ViewPR() {
                     <Text style={styles.sectionTitle}>Client Information</Text>
                     <View style={styles.card}>
                         <View style={styles.infoRow}>
-                            <Text style={styles.infoLabel}>Client ID</Text>
+                            <Text style={styles.infoLabel}>Client Name</Text>
                             <Text style={styles.infoValue}>{purchaseRequest.client_id}</Text>
                         </View>
                         <View style={styles.infoRow}>

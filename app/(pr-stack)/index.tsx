@@ -7,7 +7,7 @@ import {
 } from 'react-native';
 import { useQuery } from '@tanstack/react-query';
 import { PurchaseRequestList, PurchaseRequestListResponse, PurchaseRequestParams, PurchaseRequestStatus } from '@/types/PurchaseRequestTypes';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import useDebounce from '@/hooks/use-debounce';
 import SearchBar from '../components/search-bar';
 import { STATUS_TABS } from '@/contants/purchase-request';
@@ -24,6 +24,7 @@ export default function PRListScreen() {
     const [statusTab, setStatusTab] = useState('all');
     const [refreshing, setRefreshing] = useState(false);
     const [selectedStatus, setSelectedStatus] = useState<PurchaseRequestStatus | ''>('');
+    const [allPrData, setAllPrData] = useState<PurchaseRequestList[]>([]);
     const [filters, setFilters] = useState<PurchaseRequestParams>({
         page,
         limit,
@@ -50,7 +51,28 @@ export default function PRListScreen() {
     const prData = data?.data || [];
     const pagination = meta?.pagination;
 
+    // Accumulate data when new page loads
     useEffect(() => {
+        if (prData.length > 0) {
+            if (page === 1) {
+                // Reset data on first page (filter/search change or refresh)
+                setAllPrData(prData);
+            } else {
+                // Append data for subsequent pages
+                setAllPrData(prev => {
+                    const existingIds = new Set(prev.map(item => item.id));
+                    const newItems = prData.filter(item => !existingIds.has(item.id));
+                    return [...prev, ...newItems];
+                });
+            }
+        } else if (page === 1) {
+            setAllPrData([]);
+        }
+    }, [prData, page]);
+
+    useEffect(() => {
+        // Reset page to 1 when search changes
+        setPage(1);
         setFilters(prev => ({
             ...prev,
             purchase_request_code: debouncedSearch
@@ -59,6 +81,7 @@ export default function PRListScreen() {
 
     const onRefresh = async () => {
         setRefreshing(true);
+        setPage(1); // Reset to first page on refresh
         await refetch();
         setRefreshing(false);
     };
@@ -94,11 +117,11 @@ export default function PRListScreen() {
             {/* PR Cards */}
             <View style={{ marginTop: 8 }}>
 
-                {prData.length === 0 && !isFetching && (
+                {allPrData.length === 0 && !isFetching && (
                     <Text style={{ color: '#888', textAlign: 'center', marginTop: 32 }}>No purchase requests found.</Text>
                 )}
 
-                {prData.map((item) => (
+                {allPrData.map((item) => (
                     <CardComponent
                         key={item.id}
                         item={item}

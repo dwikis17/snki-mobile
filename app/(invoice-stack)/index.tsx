@@ -26,6 +26,7 @@ export default function InvoiceListScreen() {
     const [statusTab, setStatusTab] = useState('all');
     const [refreshing, setRefreshing] = useState(false);
     const [selectedStatus, setSelectedStatus] = useState<InvoiceStatus | ''>('');
+    const [allInvoiceData, setAllInvoiceData] = useState<Invoice[]>([]);
     const [filters, setFilters] = useState<InvoiceParams>({
         page,
         limit,
@@ -58,7 +59,26 @@ export default function InvoiceListScreen() {
     const invoiceData = data?.data || [];
     const pagination = meta?.pagination;
 
+    // Accumulate data when new page loads
     useEffect(() => {
+        if (invoiceData.length > 0) {
+            if (page === 1) {
+                setAllInvoiceData(invoiceData);
+            } else {
+                setAllInvoiceData(prev => {
+                    const existingIds = new Set(prev.map(item => item.id));
+                    const newItems = invoiceData.filter(item => !existingIds.has(item.id));
+                    return [...prev, ...newItems];
+                });
+            }
+        } else if (page === 1) {
+            setAllInvoiceData([]);
+        }
+    }, [invoiceData, page]);
+
+    useEffect(() => {
+        // Reset page to 1 when search changes
+        setPage(1);
         setFilters(prev => ({
             ...prev,
             invoice_code: debouncedSearch
@@ -67,6 +87,7 @@ export default function InvoiceListScreen() {
 
     const onRefresh = async () => {
         setRefreshing(true);
+        setPage(1); // Reset to first page on refresh
         await refetch();
         setRefreshing(false);
     };
@@ -100,11 +121,11 @@ export default function InvoiceListScreen() {
             {/* Invoice Cards */}
             <View style={{ marginTop: 8 }}>
 
-                {invoiceData.length === 0 && !isFetching && (
+                {allInvoiceData.length === 0 && !isFetching && (
                     <Text style={{ color: '#888', textAlign: 'center', marginTop: 32 }}>No invoices found.</Text>
                 )}
 
-                {invoiceData.map((item) => (
+                {allInvoiceData.map((item) => (
                     <InvoiceCardComponent
                         key={item.id}
                         item={item}

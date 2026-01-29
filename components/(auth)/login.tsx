@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, ActivityIndicator, Alert, TouchableWithoutFeedback, Keyboard, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, ActivityIndicator, Alert, TouchableWithoutFeedback, Keyboard, KeyboardAvoidingView, Platform, ScrollView, Image } from 'react-native';
 import { useAuthStore } from '@/stores/authStore';
 import { z } from 'zod';
 import { useForm, Controller } from 'react-hook-form';
@@ -44,6 +44,11 @@ export default function Login() {
                     keyboardShouldPersistTaps="handled"
                 >
                     <View style={styles.container}>
+                        <Image 
+                            source={require('@/assets/images/logo.jpg')} 
+                            style={styles.logo} 
+                            resizeMode="contain"
+                        />
                         <Text style={styles.title}>Welcome Back</Text>
                         <Controller
                             control={control}
@@ -120,6 +125,12 @@ const styles = StyleSheet.create({
         padding: 20,
         justifyContent: 'center',
         backgroundColor: '#fff',
+    },
+    logo: {
+        width: 150,
+        height: 150,
+        alignSelf: 'center',
+        marginBottom: 20,
     },
     title: {
         fontSize: 24,
