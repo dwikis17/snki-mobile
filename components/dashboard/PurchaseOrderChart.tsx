@@ -146,7 +146,7 @@ const PurchaseOrderChart: React.FC<PurchaseOrderChartProps> = ({
                                 color={expenseData.trend === 'up' ? '#4ade80' : '#f87171'}
                             />
                             <Text style={styles.trendText}>
-                                {expenseData.trend === 'up' ? 'increase' : 'decrease'} by {expenseData.change_rate}% this period
+                                {expenseData.trend === 'up' ? 'increase' : 'decrease'} by {Number(expenseData.change_rate).toFixed(1)}% this period
                             </Text>
                         </View>
                         <Text style={styles.dateRange}>{formatDateRange(dateRange)}</Text>

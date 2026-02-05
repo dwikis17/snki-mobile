@@ -206,7 +206,7 @@ const PurchaseRequestQuotationChart: React.FC<PurchaseRequestQuotationChartProps
                                 color={combinedExpense.trend === 'up' ? '#4ade80' : '#f87171'}
                             />
                             <Text style={styles.trendText}>
-                                {combinedExpense.trend === 'up' ? 'increase' : 'decrease'} by {combinedExpense.change_rate}% this period
+                                {combinedExpense.trend === 'up' ? 'increase' : 'decrease'} by {Number(combinedExpense.change_rate).toFixed(1)}% this period
                             </Text>
                         </View>
                         <Text style={styles.dateRange}>{formatDateRange(dateRange)}</Text>

@@ -36,7 +36,7 @@ const DashboardOverviewCard: React.FC<DashboardOverviewCardProps> = ({ data, isL
                 <View style={styles.trendContainer}>
                     <Ionicons name={trendIcon} size={12} color={trendColor} />
                     <Text style={[styles.trendText, { color: trendColor }]}>
-                        {Math.abs(item.change_rate)}%
+                        {Math.abs(item.change_rate).toFixed(1)}%
                     </Text>
                 </View>
             </View>

@@ -126,7 +126,7 @@ const ProfitTopItemsChart: React.FC<ProfitTopItemsChartProps> = ({
                                 color={totalExpense.trend === 'up' ? '#4ade80' : '#f87171'}
                             />
                             <Text style={styles.trendText}>
-                                {totalExpense.trend === 'up' ? 'increase' : 'decrease'} by {totalExpense.change_rate}% this period
+                                {totalExpense.trend === 'up' ? 'increase' : 'decrease'} by {Number(totalExpense.change_rate).toFixed(1)}% this period
                             </Text>
                         </View>
                     </>
